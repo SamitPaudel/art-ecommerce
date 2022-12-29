@@ -27,8 +27,12 @@
 
 <p>{{ single_artwork.description }}</p>
 
-
-	<a href="./product-detail.html" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+{% if in_cart %}
+	<a href="" class="btn  btn-success disabled"> <span class="text">Added to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+	<a href="{% url 'cart' %}" class="btn  btn-primary "> <span class="text">View cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+{% else %}
+	<a href="{% url 'add_cart' single_artwork.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+{% endif %}
 </article> <!-- product-info-aside .// -->
 		</main> <!-- col.// -->
 	</div> <!-- row.// -->

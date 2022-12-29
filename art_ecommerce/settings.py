@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'genre',
     'medium',
     'artist',
-    'store'
+    'store',
+    'carts'
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'medium.context_processors.medium_links',
                 'genre.context_processors.genre_links',
+                'carts.context_processors.counter'
             ],
         },
     },
