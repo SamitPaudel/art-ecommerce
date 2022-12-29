@@ -55,6 +55,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'art_ecommerce.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -67,12 +68,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'medium.context_processors.menu_links',
+                'medium.context_processors.medium_links',
+                'genre.context_processors.genre_links',
             ],
         },
     },
 ]
-
 WSGI_APPLICATION = 'art_ecommerce.wsgi.application'
 
 
