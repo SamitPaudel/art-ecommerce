@@ -112,6 +112,7 @@
 </header><!-- sect-heading -->
 
 <div class="row">
+    {% if artworks %}
     {% for artwork in artworks %}
 	<div class="col-md-4">
 		<figure class="card card-product-grid">
@@ -134,20 +135,39 @@
 		</figure>
 	</div> <!-- col.// -->
     {% endfor %}
-
+    {% else %}
+        <div>
+        <h6 class="text-center">Nothing found. Try again with another search term.</h6>
+        </div>
+    {% endif %}
 </div> <!-- row end.// -->
 
 
 <nav class="mt-4" aria-label="Page navigation sample">
     {% if artworks.has_other_pages %}
       <ul class="pagination">
+      {% if artworks.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ artworks.previous_page_number }}">Previous</a></li>
+      {% else %}
         <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        {% endif %}
+
+        {% for i in artworks.paginator.page_range %}
+            {% if artworks.number == i %}
+            <li class="page-item active"><a class="page-link" href="#">{{ i }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if artworks.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ artworks.next_page_number }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+
+        {% endif %}
       </ul>
-    {% endif%}
+    {% endif %}
 </nav>
 
 	</main> <!-- col.// -->

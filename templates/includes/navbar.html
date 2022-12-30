@@ -35,7 +35,7 @@
 	<div class="col-lg col-sm col-md col-6 flex-grow-0">
 		<div class="category-wrap dropdown d-inline-block float-right">
 			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-				<i class="fa fa-bars"></i> All category
+				<i class="fa fa-bars"></i> All Genres
 			</button>
 			<div class="dropdown-menu">
                 {% for genre in links %}
@@ -57,9 +57,9 @@
 		</div>  <!-- category-wrap.// -->
 	</div> <!-- col.// -->
 	<div class="col-lg  col-md-6 col-sm-12 col">
-		<form action="#" class="search">
+		<form action="{% url 'search'  %}" class="search" method="get">
 			<div class="input-group w-100">
-			    <input type="text" class="form-control" style="width:60%;" placeholder="Search">
+			    <input type="text" class="form-control" style="width:60%;" placeholder="Search" name="keyword">
 
 			    <div class="input-group-append">
 			      <button class="btn btn-primary" type="submit">

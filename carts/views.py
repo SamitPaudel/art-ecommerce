@@ -1,8 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from carts.models import Cart, CartItem
 from store.models import Artwork
+
 
 # to get session key, generate if not available
 def _cart_id(request):
@@ -53,7 +55,7 @@ def cart(request, total=0, cart_item=None):
             total += (cart_item.artwork.price)
         discount = total * 0.05
         grand_total = total - discount
-    except ObjectNotExist:
+    except ObjectDoesNotExist:
         pass
 
     context = {
@@ -64,3 +66,4 @@ def cart(request, total=0, cart_item=None):
     }
 
     return render(request, 'cart.html', context)
+
