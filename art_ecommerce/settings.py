@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'medium',
     'artist',
     'store',
-    'carts'
+    'carts',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,8 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'art_ecommerce.wsgi.application'
+
+AUTH_USER_MODEL = 'accounts.Account'
 
 
 # Database

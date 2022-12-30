@@ -89,7 +89,7 @@ def search(request):
             artworks = Artwork.objects.filter(
                 Q(artwork_title__icontains=keyword) |
                 Q(description__icontains=keyword)
-                #| Q(artist_name__icontains=keyword)
+                #| Q(artist_name__contains=keyword)
             )
             artworks_count = artworks.count()
 
@@ -98,3 +98,5 @@ def search(request):
         'artwork_count': artworks_count,
     }
     return render(request, 'home.html', context)
+
+
