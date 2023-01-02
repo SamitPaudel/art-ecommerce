@@ -7,6 +7,7 @@ from store.models import Artwork
 
 
 # to get session key, generate if not available
+global cart_item
 def _cart_id(request):
     cart = request.session.session_key
     if not cart:

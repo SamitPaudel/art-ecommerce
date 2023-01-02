@@ -46,13 +46,13 @@ def store_medium(request, mediums_slug=None):
     if mediums_slug is not None:
         mediums = get_object_or_404(Medium, slug=mediums_slug)
         artworks = Artwork.objects.filter(medium_title=mediums, is_verified=True)
-        paginator = Paginator(artworks, 9)
+        paginator = Paginator(artworks, 1)
         page = request.GET.get('page')
         paged_artworks = paginator.get_page(page)
         artworks_count = artworks.count()
     else:
-        artworks = Artwork.objects.all().order_by('id')
-        paginator = Paginator(artworks, 9)
+        artworks = Artwork.objects.all().order_by('artwork_title')
+        paginator = Paginator(artworks, 1)
         page = request.GET.get('page')
         paged_artworks = paginator.get_page(page)
         artworks_count = artworks.count()
