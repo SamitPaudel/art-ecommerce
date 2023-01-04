@@ -16,13 +16,12 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
+            full_name = form.cleaned_data['full_name']
             email = form.cleaned_data['email']
             phone_number = form.cleaned_data['phone_number']
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, username=username, password=password)
+            user = Account.objects.create_user(full_name=full_name, email=email, phone_number=phone_number, username=username, password=password)
             user.phone_number = phone_number
             user.is_active = True
             user.save()
