@@ -1,0 +1,158 @@
+{% extends 'forum_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">          
+          <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+            <ul class="navbar-nav  mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle btn btn-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Everything
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="#">Titles</a></li>
+                  <li><a class="dropdown-item" href="#">Descriptions</a></li>
+                </ul>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+</header>
+
+<body>
+    <div class="container">
+        
+        <div class="subforum">
+            <div class="subforum-title ">
+                <h4>General Information</h4>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="subforum-row row">
+                            <div class="col-md-1 center-top-bottom">
+                                <p class="category">Category</p>
+                            </div>
+                        <div class="subforum-description col-md-8 mb-0 mt-0">
+                            <h4><a href="">Description Title:</a></h4>
+                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subforum-stats">
+                                <span>2 Posts | 15 Topics</span>
+                            </div>
+                            <div class="subforum-info">
+                                <a href="">Last Post</a> by <a href="">Username</a>
+                                <br>
+                                on <small>31 Jan 2023</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="subforum-row row">
+                            <div class="col-md-1 center-top-bottom">
+                                <p class="category">Category</p>
+                            </div>
+                        <div class="subforum-description col-md-8">
+                            <h4><a href="">Description Title:</a></h4>
+                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subforum-stats">
+                                <span>2 Posts | 15 Topics</span>
+                            </div>
+                            <div class="subforum-info">
+                                <a href="">Last Post</a> by <a href="">Username</a>
+                                <br>
+                                on <small>31 Jan 2023</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+            </div>
+        </div>
+        <div class="subforum">
+            <div class="subforum-title ">
+                <h4>General Information</h4>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="subforum-row row">
+                            <div class="col-md-1 center-top-bottom">
+                                <p class="category">Category</p>
+                            </div>
+                        <div class="subforum-description col-md-8">
+                            <h4><a href="">Description Title:</a></h4>
+                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subforum-stats">
+                                <span>2 Posts | 15 Topics</span>
+                            </div>
+                            <div class="subforum-info">
+                                <a href="">Last Post</a> by <a href="">Username</a>
+                                <br>
+                                on <small>31 Jan 2023</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="subforum-row row">
+                            <div class="col-md-1 center-top-bottom">
+                                <p class="category">Category</p>
+                            </div>
+                        <div class="subforum-description col-md-8">
+                            <h4><a href="">Description Title:</a></h4>
+                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="subforum-stats">
+                                <span>2 Posts | 15 Topics</span>
+                            </div>
+                            <div class="subforum-info">
+                                <a href="">Last Post</a> by <a href="">Username</a>
+                                <br>
+                                on <small>31 Jan 2023</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>                    
+            </div>
+        </div>
+    </div>
+
+    <!-- Forum Info -->
+    <div class="forum-info">
+        <div class="chart">
+            Chitrakon Forum - Stats &nbsp; <i class="bi bi-bar-chart-fill"></i>
+        </div>
+        <div>
+            <span><b>22 Posts</b> in <b>4 Topics</b> by <b>9 Users</b></span>
+            <br>
+            <span>Latest Post: <a href="">Latest Post</a> on 31 Jan 2023 by <a href="">User</a></span>
+
+        </div>
+    </div>
+        
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+    <script src={% static 'js/main.js' %}></script>
+</body>
+
+{% endblock %}
+</html>
