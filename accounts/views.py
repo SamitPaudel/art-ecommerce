@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
-from accounts.forms import RegistrationForm
+from accounts.forms import RegistrationForm, UpdateForm
 from accounts.models import Account
 
 def register(request):
@@ -64,7 +64,7 @@ def logout(request):
 
 @login_required(login_url = 'login')
 def dashboard(request):
-    return render(request, 'accounts/dashboard.html')
+    return render(request, 'dashboard.html')
 
 
 def forgot_password(request):
@@ -121,3 +121,21 @@ def resetPassword(request):
             return redirect('resetPassword')
     else:
         return render(request, 'accounts/resetpassword.html')
+
+
+def update_profile(request):
+    context = {}
+    user = request.user
+    form = UpdateForm(request.POST or None, instance=user)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+
+    context.update({
+        "form": form,
+        "user": user,
+        "title": "Update Profile"
+    })
+    return render(request, "accounts/dashboard/update_profile.html", context)
+

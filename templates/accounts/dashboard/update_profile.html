@@ -1,0 +1,59 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+{% include 'includes/alerts.html' %}
+<div class="container">
+	<div class="row">
+	<aside class="col-md-3">
+		<!--   SIDEBAR   -->
+		<ul class="list-group">
+			<a class="list-group-item active" href="{% url 'update_profile' %}">Edit Profile</a>
+			<a class="list-group-item" href="#"> Transactions </a>
+			<a class="list-group-item" href="#"> Return and refunds </a>
+			<a class="list-group-item" href="#"> Settings </a>
+			<a class="list-group-item" href="#"> My Selling Items </a>
+			<a class="list-group-item" href="#"> Received orders </a>
+		</ul>
+		<br>
+		<a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span class="text">Log out</span> </a>
+		<!--   SIDEBAR .//END   -->
+	</aside>
+
+{% block content-2 %}
+    <main class="col-md-9">
+		<article class="card">
+		<header class="card-header">
+            <h1 style="text-align:center; margin-block:50px; color:red;">Hey {{user}}, Edit Your Profile</h1>
+		</header>
+		<div class="card-body">
+			<div class="row">
+				<div class="col-md-8">
+
+<form action="{% url 'update_profile' %}" method="POST">
+  {% csrf_token %}
+  <div class="form-group">
+    <label>Change Full Name</label>
+    <input type="text" class="form-control" placeholder="Full Name" name="full_name" value="{{ user.full_name }}">
+  </div> <!-- form-group// -->
+  <div class="form-group">
+    <label>Change Username</label>
+    <input type="text" class="form-control" placeholder="Username" name="username" value="{{ user.username }}">
+  </div> <!-- form-group// -->
+
+  <div class="mb-3">
+    <label for="profileImage" class="form-label">Change Profile Image</label>
+    <input class="form-control" type="file" id="formFile">
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary ">Change</button>
+  </div>
+</form>
+                </div>
+            </div>
+        </div>
+        </article>
+    </main>
+{% endblock %}
+
+{% endblock %}

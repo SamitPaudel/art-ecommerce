@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'tinymce',
     'hitcount',
     'taggit',
-
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -161,3 +161,5 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'samitpdl@gmail.com'
 EMAIL_HOST_PASSWORD = 'kbsygukrwcttzfee'
 EMAIL_USE_TLS = True
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5'

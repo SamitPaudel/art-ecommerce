@@ -5,7 +5,7 @@
 <body>
     <div class="container">
         <div class="navigation">
-            <span><a href="#">Chitrakon Forum - Forums</a> >> <a href="{{ post.categories }}">{{ post.categories }}</a> >> <a href="{{ post.get_url }}">{{ post.title }}</a> </span>
+            <span><a href="#">Chitrakon Forum - Forums</a> >> <a href="{{ post.categories.all.0.get_url }}">{{ post.categories.all.0 }}</a> >> <a href="{{ post.get_url }}">{{ post.title }}</a> </span>
         </div>
 
         <table class="table table-detail">
@@ -38,6 +38,9 @@
 
             </tbody>
         </table>
+
+        {# Comment #}
+        {% for comment in post.comments.all %}
         <table class="table table-detail reply-table">
             <thead>
               <tr>
@@ -47,22 +50,14 @@
             </thead>
             <tbody>
               <tr>
-                <td scope="row" class="username"><a href="#">Username2</a>
+                <td scope="row" class="username"><a href="#">{{ comment.user.full_name }}</a>
                     <br>
-                    <div>Role</div>
-                    <img class="avatar" src="https://cdn.pixabay.com/photo/2014/10/27/18/38/man-505353_960_720.jpg">
-                    <div>Posts: 7</div>
+                    <img class="avatar" src="{{ comment.user.profileImage.url }}">
+                    <div>Posts: {{ comment.user.num_post }}</div>
                 </td>
                 <td class="content">
-                    Hi everyone, <br><br>
+                    {{ comment.content }}
 
-                    I completely understand the frustration that comes with an artist turning down a commission due to the price being too high. However, it's important to remember that artists often set their prices based on the amount of time and effort they believe a piece will require, as well as the materials and quality they want to deliver. <br><br>
-
-                    If an artist feels that the price set is not enough to meet the desired quality, it's probably best for them to decline the commission. It's better to decline now than to deliver a subpar piece that does not meet the client's expectations or the artist's own standards. <br><br>
-
-                    In these situations, it may be worth considering finding an artist whose prices align more with your budget or negotiating a price that works for both parties. Ultimately, the most important thing is to find an artist who can deliver the quality you're looking for at a price you're comfortable with. <br><br>
-
-                    Best regards.<br><br>
                     <div class="comment">
                       <button class="btn btn-primary align-right" id="reply-btn" onclick="showReply()">Reply</button>
                     </div>
@@ -73,11 +68,52 @@
                       
                       <input class="btn btn-primary row" type="submit" name="" value="Reply">
                     </div>
-                    
+                </td>
+
+
                 </tr>
 
             </tbody>
         </table>
+
+        {# Replies #}
+        {% for reply in comment.replies.all %}
+        <table class="table table-detail reply-table" style="width: 95%; margin-left: 5%">
+            <thead>
+              <tr>
+                <th scope="col author" class="text-center">Author</th>
+                <th scope="col topic">Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td scope="row" class="username"><a href="#">{{ reply.user.full_name }}</a>
+                    <br>
+                    <img class="avatar" src="{{ reply.user.profileImage.url }}">
+                    <div>Posts: {{ reply.user.num_post }}</div>
+                </td>
+                <td class="content">
+                    {{ reply.content }}
+
+                    <div class="comment">
+                      <button class="btn btn-primary align-right" id="reply-btn" onclick="showReply()">Reply</button>
+                    </div>
+
+                    <!-- Comment input -->
+                    <div class="container comment-area" hidden id="reply-area">
+                      <textarea name="comment" class="row"></textarea>
+
+                      <input class="btn btn-primary row" type="submit" name="" value="Reply">
+                    </div>
+                </td>
+
+
+                </tr>
+
+            </tbody>
+        </table>
+        {% endfor %}
+        {% endfor %}
         
 
               

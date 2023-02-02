@@ -30,6 +30,33 @@ class PostCategory(models.Model):
     def last_post(self):
         return Post.objects.filter(categories=self).latest("date")
 
+class Reply(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    content = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'Replies'
+
+    def __str__(self):
+        return self.content[:100]
+
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    content = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    replies = models.ManyToManyField(Reply, blank=True)
+
+    def __str__(self):
+        return self.content[:100]
+
+    @property
+    def num_replies(self):
+        return self.replies.count()
+
+
 # Create your models here.
 class Post(models.Model):
     title = models.CharField(max_length=400)
@@ -43,6 +70,7 @@ class Post(models.Model):
                                         related_query_name='hit_count_generic_relation'
                                         )
     tags = TaggableManager()
+    comments = models.ManyToManyField(Comment, blank=True, )
 
     def __str__(self):
         return self.title
@@ -51,3 +79,11 @@ class Post(models.Model):
         return reverse("detail", kwargs={
             "slug":self.slug
         })
+
+    @property
+    def num_comments(self):
+        return self.comments.count()
+
+    @property
+    def last_reply(self):
+        return self.comments.latest("date")

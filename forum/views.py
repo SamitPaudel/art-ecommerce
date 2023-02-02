@@ -24,7 +24,8 @@ def posts(request, slug):
     posts = Post.objects.filter(approved=True, categories=post_category)
 
     context = {
-        "posts":posts
+        "posts":posts,
+        "forum": post_category,
     }
 
     return render(request, "posts.html", context)
