@@ -1,4 +1,5 @@
 {% extends 'forum_base.html' %}
+{% load hitcount_tags %}
 
 {% block content %}
 
@@ -41,162 +42,17 @@
               </tr>
             </thead>
             <tbody>
+            {% for post in posts %}
               <tr>
                 <td scope="row" class="header-status">Running</td>
                 <td>
-                    <a href="">A painting commission</a>
+                     <a href="{{ post.get_url }}">{{ post.title }}</a>
                     <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
+                    <span>Started By: <a href="#">{{ post.user.full_name|title }}</a></span></td>
+                <td>1 replies <br>{% get_hit_count for post %} Views</td>
                 <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
               </tr>
-              
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-              <tr>
-                <td scope="row" class="header-status">Running</th>
-                <td>
-                    <a href="">A painting commission</a>
-                    <br>
-                    <span>Started By: <a href="#">User</a></span></td>
-                <td>2 replies <br>12 views</td>
-                <td>Jan 31, 2023 <br> By <a href="#">User</a></td>
-              </tr>
-
-              
+            {% endfor %}
             </tbody>
           </table>
           <ul class="pagination justify-content-center">

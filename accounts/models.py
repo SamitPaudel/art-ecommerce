@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
+from django_resized import ResizedImageField
 
 class MyAccountManager(BaseUserManager):
     def create_user(self, full_name, username, email, phone_number, password):
@@ -41,6 +41,7 @@ class Account(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length=50)
     password = models.CharField(max_length=100)
+    profileImage = ResizedImageField(size=[100, 180],quality=100, upload_to='profile_pic', default=None, blank=True, null=True)
     # add another fields here if required
 
     # required
@@ -58,7 +59,7 @@ class Account(AbstractBaseUser):
     objects = MyAccountManager()
 
     def __str__(self):
-        return self.email
+        return self.full_name
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

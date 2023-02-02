@@ -1,71 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forum</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</head>
+{% extends 'forum_base.html' %}
+{% load hitcount_tags %}
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">          
-          <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-            <ul class="navbar-nav  mb-2 mb-lg-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle btn btn-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Everything
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Titles</a></li>
-                  <li><a class="dropdown-item" href="#">Descriptions</a></li>
-                </ul>
-              </li>
-            </ul>
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-</header>
-
+{% block content %}
 <body>
     <div class="container">
         <div class="navigation">
-            <span><a href="#">Chitrakon Forum - Forums</a> >> <a href="">Random Topic</a> >> <a href="">Random Post</a> </span>
+            <span><a href="#">Chitrakon Forum - Forums</a> >> <a href="{{ post.categories }}">{{ post.categories }}</a> >> <a href="{{ post.get_url }}">{{ post.title }}</a> </span>
         </div>
 
         <table class="table table-detail">
             <thead>
               <tr>
-                <th scope="col author" class="text-center">Author</th>
-                <th scope="col topic">Topic: Post's Title</th>
+                <th scope="col author" class="text-center">{{ post.user }}</th>
+                <th scope="col topic">Topic: {{ post.title }} ({% get_hit_count for post %} Views)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td scope="row" class="username"><a href="#">Username</a>
+                <td scope="row" class="username"><a href="#">{{ post.user.full_name|title }}</a>
                     <br>
-                    <div>Role</div>
-                    <img class="avatar" src="https://cdn.pixabay.com/photo/2014/10/27/18/38/man-505353_960_720.jpg">
-                    <div>Posts: 7</div>
+                    <img class="avatar" src="{{ post.user.profileImage.url }}">
                 </td>
                 <td class="content">
-                    Hi everyone, <br><br>
-
-                    I completely understand the frustration that comes with an artist turning down a commission due to the price being too high. However, it's important to remember that artists often set their prices based on the amount of time and effort they believe a piece will require, as well as the materials and quality they want to deliver. <br><br>
-
-                    If an artist feels that the price set is not enough to meet the desired quality, it's probably best for them to decline the commission. It's better to decline now than to deliver a subpar piece that does not meet the client's expectations or the artist's own standards. <br><br>
-
-                    In these situations, it may be worth considering finding an artist whose prices align more with your budget or negotiating a price that works for both parties. Ultimately, the most important thing is to find an artist who can deliver the quality you're looking for at a price you're comfortable with. <br><br>
-
-                    Best regards.<br><br>
+                    {{ post.content|safe }}
                     <div class="comment">
                       <button class="btn btn-primary align-right" id="comment-btn" onclick="showComment()">Comment</button>
                     </div>
@@ -136,5 +93,6 @@
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
     <script src="main.js"></script>
-</body>
-</html>
+
+
+{% endblock %}

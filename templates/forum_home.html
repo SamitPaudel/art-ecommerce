@@ -32,8 +32,9 @@
         
         <div class="subforum">
             <div class="subforum-title ">
-                <h4>General Information</h4>
+                <h4>Available Categories</h4>
             </div>
+            {% for forum in forums %}
             <div class="card">
                 <div class="card-body">
                     <div class="subforum-row row">
@@ -41,101 +42,26 @@
                                 <p class="category">Category</p>
                             </div>
                         <div class="subforum-description col-md-8 mb-0 mt-0">
-                            <h4><a href="">Description Title:</a></h4>
-                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
+                            <h4><a href="{{ forum.get_url }}">{{ forum.title }}</a></h4>
+                            <p>{{ forum.description }}</p>
                         </div>
                         <div class="col-md-3">
                             <div class="subforum-stats">
-                                <span>2 Posts | 15 Topics</span>
+                                <span>{{ forum.num_posts }} Post/s</span>
                             </div>
                             <div class="subforum-info">
-                                <a href="">Last Post</a> by <a href="">Username</a>
+                                <a href="{{ forum.last_post.get_url }}">Last Post</a> by <a href="">{{ forum.last_post.user.full_name }}</a>
                                 <br>
-                                on <small>31 Jan 2023</small>
+                                on <small>{{ forum.last_post.date|date }}</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                    
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="subforum-row row">
-                            <div class="col-md-1 center-top-bottom">
-                                <p class="category">Category</p>
-                            </div>
-                        <div class="subforum-description col-md-8">
-                            <h4><a href="">Description Title:</a></h4>
-                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="subforum-stats">
-                                <span>2 Posts | 15 Topics</span>
-                            </div>
-                            <div class="subforum-info">
-                                <a href="">Last Post</a> by <a href="">Username</a>
-                                <br>
-                                on <small>31 Jan 2023</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    
-            </div>
-        </div>
-        <div class="subforum">
-            <div class="subforum-title ">
-                <h4>General Information</h4>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="subforum-row row">
-                            <div class="col-md-1 center-top-bottom">
-                                <p class="category">Category</p>
-                            </div>
-                        <div class="subforum-description col-md-8">
-                            <h4><a href="">Description Title:</a></h4>
-                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="subforum-stats">
-                                <span>2 Posts | 15 Topics</span>
-                            </div>
-                            <div class="subforum-info">
-                                <a href="">Last Post</a> by <a href="">Username</a>
-                                <br>
-                                on <small>31 Jan 2023</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="subforum-row row">
-                            <div class="col-md-1 center-top-bottom">
-                                <p class="category">Category</p>
-                            </div>
-                        <div class="subforum-description col-md-8">
-                            <h4><a href="">Description Title:</a></h4>
-                            <p>Description Content: Content of the description Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt provident, totam nihil esse amet temporibus laboriosam sapiente cumque quidem. Ipsam suscipit velit, quos quod perspiciatis aperiam obcaecati dignissimos non asperiores?</p>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="subforum-stats">
-                                <span>2 Posts | 15 Topics</span>
-                            </div>
-                            <div class="subforum-info">
-                                <a href="">Last Post</a> by <a href="">Username</a>
-                                <br>
-                                on <small>31 Jan 2023</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>                    
-            </div>
+            {% endfor %}
         </div>
     </div>
+
 
     <!-- Forum Info -->
     <div class="forum-info">

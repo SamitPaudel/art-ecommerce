@@ -9,4 +9,9 @@ class ArtistAdmin(admin.ModelAdmin):
     }
     list_display = ('artist_name','slug')
 
+    def display_artist_email(self, obj):
+        return obj.artist_email.email
+
+    display_artist_email.short_description = 'Artist Account'
+
 admin.site.register(Artist, ArtistAdmin)

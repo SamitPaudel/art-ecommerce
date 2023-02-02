@@ -5,6 +5,6 @@ from forum.views import detail, posts
 
 urlpatterns = [
     path('', views.home, name='forum'),
-    path('detail/', detail, name='detail'),
-    path('posts/', posts, name='posts'),
+    path('detail/<slug>/', detail, name='detail'),
+    path('posts/<slug>/', posts, name='posts'),
 ]
