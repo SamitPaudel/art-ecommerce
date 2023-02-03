@@ -1,0 +1,13 @@
+{% extends 'forum_base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<h3 style="text-align:center; margin-block:50px;">Create New Post</h3>
+
+<form method="POST" style="margin-left:150px;">
+    {% csrf_token %}
+    {{form|crispy}}
+    <input class="btn btn-primary" type="submit" value="Create"  style="margin-block:50px;">
+</form>
+
+{% endblock content %}

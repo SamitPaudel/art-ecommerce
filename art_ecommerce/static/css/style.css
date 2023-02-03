@@ -9,6 +9,25 @@ a {
     color: white;
 }
 
+.forum-nav{
+  margin-left: 0%;
+}
+
+.create-new-btn{
+    margin-left: 10px;
+}
+
+.navbar-expand-lg .navbar-collapse {
+    margin-left: 0;
+}
+
+@media (min-width: 992px) {
+.navbar-expand-lg .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+    margin-left: 0;
+}}
+
 .subforum-title h4{
     padding: 10px;
     margin-top: 20px;

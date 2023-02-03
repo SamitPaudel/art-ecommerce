@@ -8,7 +8,7 @@ function showComment(){
         commentArea.removeAttribute("hidden");
     } else {
           cmtButton.innerHTML = 'Comment'
-        commentArea.setAttribute("hidden", "");
+          commentArea.setAttribute("hidden", "");
       }
 }
 

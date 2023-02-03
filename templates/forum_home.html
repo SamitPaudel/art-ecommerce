@@ -4,7 +4,7 @@
 {% block content %}
 
 <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light forum-nav">
         <div class="container">          
           <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
             <ul class="navbar-nav  mb-2 mb-lg-0">
@@ -22,6 +22,11 @@
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
               <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
+              {% if user.is_authenticated %}
+              <div class="create-new-btn">
+                <a class="btn btn-primary" href="{% url 'create_post' %}"><i class="bi bi-file-earmark-plus"></i> Create New Post</a>
+              </div>
+              {% endif %}
           </div>
         </div>
       </nav>

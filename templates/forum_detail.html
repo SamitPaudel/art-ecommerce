@@ -1,5 +1,6 @@
 {% extends 'forum_base.html' %}
 {% load hitcount_tags %}
+{% load static %}
 
 {% block content %}
 <body>
@@ -28,12 +29,15 @@
                     </div>
                     
                     <!-- Comment input -->
-                    <div class="container comment-area" hidden id="comment-area">
-                      <textarea name="comment" class="row"></textarea>
-                      
-                      <input class="btn btn-primary row" type="submit" name="" value="Submit">
-                    </div>
-                    
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <div class="comment-area" hidden id="comment{{comment.id}}">
+                            <textarea name="reply" id="" placeholder="reply here ... "></textarea>
+                            <input class="btn btn-primary" type="submit" value="Submit" name="reply-form">
+                            <input type="hidden" name="comment-id" value="{{comment.id}}">
+                        </div>
+                    </form>
+
                 </tr>
 
             </tbody>
@@ -59,17 +63,19 @@
                     {{ comment.content }}
 
                     <div class="comment">
-                      <button class="btn btn-primary align-right" id="reply-btn" onclick="showReply()">Reply</button>
+                      <button class="btn btn-primary align-right" id="reply-btn" onclick="showReply('comment{{ comment.id }}')">Reply</button>
                     </div>
                     
                     <!-- Comment input -->
-                    <div class="container comment-area" hidden id="reply-area">
-                      <textarea name="comment" class="row"></textarea>
-                      
-                      <input class="btn btn-primary row" type="submit" name="" value="Reply">
-                    </div>
+                    <form action="." method="POST">
+                        {% csrf_token %}
+                        <div class="container comment-area" hidden id="comment{{ comment.id }}">
+                          <textarea name="reply" class="row"></textarea>
+                          <input class="btn btn-primary row" type="submit" name="reply-form" value="Submit">
+                          <input name="comment-id" value="{{ comment.id }}" type="hidden">
+                        </div>
+                    </form>
                 </td>
-
 
                 </tr>
 
@@ -128,7 +134,5 @@
             
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
-    <script src="main.js"></script>
-
-
+    <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}

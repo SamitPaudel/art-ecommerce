@@ -162,4 +162,4 @@ EMAIL_HOST_USER = 'samitpdl@gmail.com'
 EMAIL_HOST_PASSWORD = 'kbsygukrwcttzfee'
 EMAIL_USE_TLS = True
 
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
