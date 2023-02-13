@@ -6,7 +6,7 @@
 <body>
     <div class="container">
         <div class="navigation">
-            <span><a href="#">Chitrakon Forum - Forums</a> >> <a href="{{ post.categories.all.0.get_url }}">{{ post.categories.all.0 }}</a> >> <a href="{{ post.get_url }}">{{ post.title }}</a> </span>
+            <span><a href="{% url 'forum' %}">Chitrakon Forum - Forums</a> >> <a href="{{ post.categories.all.0.get_url }}">{{ post.categories.all.0 }}</a> >> <a href="{{ post.get_url }}">{{ post.title }}</a> </span>
         </div>
 
         <table class="table table-detail">

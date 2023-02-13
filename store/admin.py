@@ -1,8 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from medium.models import Medium
-from store.models import Artwork
+from store.models import Artwork, ArtworkComment
 
 
 class ArtworkAdmin(admin.ModelAdmin):
@@ -12,3 +11,4 @@ class ArtworkAdmin(admin.ModelAdmin):
     list_display = ('artwork_title', 'artist_name', 'medium_title', 'genre', 'price')
 
 admin.site.register(Artwork, ArtworkAdmin)
+admin.site.register(ArtworkComment)

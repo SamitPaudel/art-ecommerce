@@ -78,4 +78,5 @@ def create_post(request):
     })
     return render(request, "create_post.html", context)
 
-
+def search_result(request):
+    return render(request, "search_results.html")

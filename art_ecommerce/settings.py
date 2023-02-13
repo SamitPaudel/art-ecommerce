@@ -77,7 +77,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'medium.context_processors.medium_links',
                 'genre.context_processors.genre_links',
-                'carts.context_processors.counter'
+                'carts.context_processors.counter',
+                'forum.context_processors.searchFunction',
             ],
         },
     },

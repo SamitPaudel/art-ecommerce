@@ -7,21 +7,19 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light forum-nav">
         <div class="container">          
           <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-            <ul class="navbar-nav  mb-2 mb-lg-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle btn btn-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Everything
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Titles</a></li>
-                  <li><a class="dropdown-item" href="#">Descriptions</a></li>
-                </ul>
-              </li>
-            </ul>
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+              <form action="{% url 'search_result' %}" role="form" method="GET" name="">
+                  <div class="search-box">
+                      <div>
+                          <select name="search-box" id="">
+                              <option value="Everything">Everything</option>
+                              <option value="Titles">Titles</option>
+                              <option value="Descriptions">Descriptions</option>
+                          </select>
+                          <input type="text" name="q" typeof="Search" placeholder="Search...">
+                          <button type="submit" name="search" class="btn btn-light"><i class="fa fa-search"></i></button>
+                      </div>
+                  </div>
+              </form>
               {% if user.is_authenticated %}
               <div class="create-new-btn">
                 <a class="btn btn-primary" href="{% url 'create_post' %}"><i class="bi bi-file-earmark-plus"></i> Create New Post</a>

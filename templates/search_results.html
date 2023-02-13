@@ -1,0 +1,64 @@
+{% extends 'forum_base.html' %}
+{% load hitcount_tags %}
+
+{% block content %}
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">          
+          <form action="{% url 'search_result' %}" role="form" method="GET" name="">
+              <div class="search-box">
+                  <div>
+                      <select name="search-box" id="">
+                          <option value="Everything">Everything</option>
+                          <option value="Titles">Titles</option>
+                          <option value="Descriptions">Descriptions</option>
+                      </select>
+                      <input type="text" name="q" typeof="Search" placeholder="Search...">
+                      <button type="submit" name="search" class="btn btn-light"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
+          </form>
+        </div>
+      </nav>
+</header>
+
+<body>
+    <div class="container">
+      <div class="navigation">
+          <span>Search: <b><i>"{{ query }}"</i></b>  -- {{ objects|length }} Result(s) Found</span>
+          <a href="{% url 'forum' %}" class="btn btn-light ml-8">Back to Forum Home</a>
+      </div>
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Replies/Views</th>
+                <th scope="col">Last Reply</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for post in objects %}
+              <tr>
+                <td scope="row" class="header-status">Running</td>
+                <td>
+                     <a href="{{ post.get_url }}">{{ post.title }}</a>
+                    <br>
+                    <span>Started By: <a href="#">{{ post.user.full_name|title }}</a></span></td>
+                <td>{{ post.num_comments }} replies <br>{% get_hit_count for post %} Views</td>
+                <td>
+                    {{ post.date| date }} <br> By <a href="#">{{ post.last_reply.user.full_name }}</a></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <ul class="pagination justify-content-center">
+            Pages:
+              {% for num_page in posts.paginator.page_range %}
+              <li class="page-item"><a class="page-link" href="?page={{ num_page }}">{{ num_page }}</a></li>
+              {% endfor %}
+          </ul>
+    </div>
+
+{% endblock %}

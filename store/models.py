@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 from django.urls import reverse
 
+from accounts.models import Account
 from artist.models import Artist
 from genre.models import Genre
 from medium.models import Medium
@@ -29,3 +30,12 @@ class Artwork(models.Model):
 
     def __str__(self):
         return self.artwork_title
+
+class ArtworkComment(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, default=1)
+    content = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content[:100]

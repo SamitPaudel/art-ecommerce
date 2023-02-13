@@ -9,7 +9,7 @@ from carts.models import CartItem
 from carts.views import _cart_id
 from genre.models import Genre
 from medium.models import Medium
-from store.models import Artwork
+from store.models import Artwork, ArtworkComment
 
 
 def store(request, genres_slug=None):
