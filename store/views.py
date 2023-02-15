@@ -70,6 +70,13 @@ def artwork_detail(request, genres_slug, artwork_slug):
     try:
         single_artwork = Artwork.objects.get(genre__slug=genres_slug, slug=artwork_slug)
         in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), artwork=single_artwork).exists()
+        artwork_comments = ArtworkComment.objects.filter(artwork=single_artwork)
+
+        if request.method == 'POST' and request.user.is_authenticated:
+            comment_content = request.POST.get('comment_content')
+            user = request.user
+            artwork_comment = ArtworkComment(user=user, artwork=single_artwork, content=comment_content)
+            artwork_comment.save()
 
     except Exception as e:
         raise e
@@ -77,10 +84,27 @@ def artwork_detail(request, genres_slug, artwork_slug):
     context = {
         'single_artwork': single_artwork,
         'in_cart': in_cart,
+        'artwork_comments': artwork_comments,
     }
 
     return render(request, 'artwork_detail.html', context)
 
+
+def price_selection(request):
+    artwork = Artwork.objects.all()
+
+    # Get minimum and maximum prices from request parameters
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    # Filter artwork by price range
+    if min_price and max_price:
+        artwork = artwork.filter(price__gte=min_price, price__lte=max_price)
+
+    context = {
+        'artwork': artwork,
+    }
+    return render(request, 'home.html', context)
 
 def search(request):
     if 'keyword' in request.GET:

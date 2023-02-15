@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+    <h1>{{ artist.artist_name }}</h1>
+    <p>{{ artist.description }}</p>
+    <p>{{ artist.artist_email.email }}</p>
+
+    <h2>Artworks</h2>
+    <div class="row">
+        {% for artwork in artwork_list %}
+            <div class="col-md-4">
+                <figure class="card card-product-grid">
+                    <div class="img-wrap">
+                        <a href="{{ artwork.get_url }}"><img src="{{ artwork.image.url }}"></a>
+
+
+                    </div> <!-- img-wrap.// -->
+                    <figcaption class="info-wrap">
+                        <div class="fix-height">
+                            <a href="{{ artwork.get_url }}" class="title">{{ artwork.artwork_title}}</a>
+                            <span class="price">${{ artwork.price }}</span>
+
+                                <a href="{{ artwork.get_url }}" class="title">{{ artwork.artist_name }}</a>
+                        </div>
+                        <a href="{% url 'add_cart' artwork.id %}" class="btn btn-block btn-primary">Add to Cart</a>
+                    </figcaption>
+                </figure>
+	        </div> <!-- col.// -->
+{#            <li><a href="{% url 'artwork_detail' artwork.genre.slug artwork.slug %}">{{ artwork.title }}</a></li>#}
+        {% empty %}
+            <li>No artwork found.</li>
+        {% endfor %}
+    </div>
+
+    </div>
+    {% endblock %}

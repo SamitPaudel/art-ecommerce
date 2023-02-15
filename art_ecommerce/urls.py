@@ -22,11 +22,12 @@ from art_ecommerce.settings import MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('cart/', include('carts.urls')),
     path('accounts/', include('accounts.urls')),
+    path('artists/', include('artist.urls')),
     path('forum/', include('forum.urls')),
     path('', views.home, name="home"),
     path('', include('store.urls')),
-    path('cart/', include('carts.urls')),
     path('tinymce/', include('tinymce.urls')),
     path('hitcount/', include('hitcount.urls', namespace='hitcount')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

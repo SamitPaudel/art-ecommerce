@@ -11,6 +11,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from accounts.forms import RegistrationForm, UpdateForm
 from accounts.models import Account
+from carts.models import Cart, CartItem
+from carts.views import _cart_id
+
 
 def register(request):
     if request.method == 'POST':
@@ -43,9 +46,19 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
         user = auth.authenticate(email=email, password=password)
-        print(email, password)
 
         if user:
+            try:
+                cart = Cart.objects.get(cart_id=_cart_id(request))
+                is_cart_item_exists = CartItem.objects.filter(cart=cart).exists()
+                if is_cart_item_exists:
+                    cart_item = CartItem.objects.filter(cart=cart)
+
+                    for item in cart_item:
+                        item.user = user
+                        item.save()
+            except:
+                pass
             auth.login(request, user)
             messages.success(request, "You are now logged in.")
             return redirect('home')

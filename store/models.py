@@ -29,7 +29,7 @@ class Artwork(models.Model):
 
 
     def __str__(self):
-        return self.artwork_title
+        return str(self.artwork_title)
 
 class ArtworkComment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)

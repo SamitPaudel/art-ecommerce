@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 
 # Create your models here.
+from pages import render
+
 from accounts.models import Account
 
 class Artist(models.Model):
@@ -12,4 +14,3 @@ class Artist(models.Model):
 
     def __str__(self):
         return self.artist_name
-

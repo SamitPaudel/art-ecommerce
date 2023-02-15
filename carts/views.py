@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -49,6 +50,10 @@ def remove_cart(request, artwork_id):
 
 # Create your views here.
 def cart(request, total=0, cart_item=None):
+    cart_items = None
+    discount = None
+    grand_total = None
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
@@ -68,3 +73,23 @@ def cart(request, total=0, cart_item=None):
 
     return render(request, 'cart.html', context)
 
+@login_required(login_url='login')
+def checkout(request, total=0, cart_item=None):
+    try:
+        total = 0
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_items = CartItem.objects.filter(cart=cart, is_active=True)
+        for cart_item in cart_items:
+            total += (cart_item.artwork.price)
+        discount = total * 0.05
+        grand_total = total - discount
+    except ObjectDoesNotExist:
+        pass
+
+    context = {
+        'total': total,
+        'cart_items': cart_items,
+        'discount': discount,
+        'grand_total': grand_total
+    }
+    return render(request, 'checkout.html', context)
