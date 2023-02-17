@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'hitcount',
     'taggit',
     'crispy_forms',
+    'orders'
 ]
 
 MIDDLEWARE = [

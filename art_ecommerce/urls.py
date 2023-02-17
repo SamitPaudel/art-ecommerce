@@ -22,6 +22,7 @@ from art_ecommerce.settings import MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('orders/', include('orders.urls')),
     path('cart/', include('carts.urls')),
     path('accounts/', include('accounts.urls')),
     path('artists/', include('artist.urls')),
