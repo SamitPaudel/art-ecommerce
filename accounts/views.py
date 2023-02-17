@@ -9,8 +9,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
-from accounts.forms import RegistrationForm, UpdateForm
-from accounts.models import Account
+from accounts.forms import RegistrationForm, UpdateForm, ArtPortfolioForm
+from accounts.models import Account, ArtPortfolio
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
 
@@ -151,4 +151,19 @@ def update_profile(request):
         "title": "Update Profile"
     })
     return render(request, "accounts/dashboard/update_profile.html", context)
+
+
+def submit_portfolio(request):
+    if request.method == 'POST':
+        form = ArtPortfolioForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save the ArtPortfolio instance
+            art_portfolio = form.save(commit=False)
+            art_portfolio.artist = request.user
+            art_portfolio.save()
+            form.save_m2m()
+            return redirect('submit_portfolio')
+    else:
+        form = ArtPortfolioForm()
+    return render(request, 'accounts/dashboard/submit_portfolio.html', {'form': form})
 

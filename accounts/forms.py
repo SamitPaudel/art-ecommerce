@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account
+from .models import Account, ArtPortfolio
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={
@@ -35,4 +35,16 @@ class UpdateForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ("full_name", "username", "profileImage")
+
+class ArtPortfolioForm(forms.ModelForm):
+    class Meta:
+        model = ArtPortfolio
+        fields = ('image1', 'image2', 'image3', 'image4', 'image5')
+        widgets = {
+            'image1': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image2': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image3': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image4': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image5': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
 

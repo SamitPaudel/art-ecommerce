@@ -1,0 +1,57 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+        {% include 'includes/alerts.html' %}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}" active>Submit Art
+                                Portfolio</a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+
+                {% block content-2 %}
+                    <main class="col-md-9">
+                        <div class="container mt-5">
+                            <h2>Submit Your Art Portfolio</h2>
+                            <p class="lead">
+                                We kindly request that you upload five of your most exemplary works for verification. Our administration will examine these submissions to verify your artistic credentials. Upon successful verification, you will be granted access to upload and edit your artwork to be sold through our website.
+                            </p>
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <br>
+                                {% for i in '12345' %}
+                                    <div class="form-group">
+                                        <label for="id_image{{ i }}">Image {{ i }}</label>
+                                        <input type="file" name="image{{ i }}" id="id_image{{ i }}" required
+                                               onchange="loadFile(event, 'preview{{ i }}')">
+                                        <img id="preview{{ i }}" class="img-thumbnail" src="" style="display: none;">
+                                    </div>
+                                {% endfor %}
+                                <br>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+
+
+                    </main>
+                {% endblock content-2 %}
+
+                <script>
+                    var loadFile = function (event, preview_id) {
+                        var output = document.getElementById(preview_id);
+                        output.src = URL.createObjectURL(event.target.files[0]);
+                        output.style.display = "block";
+                    };
+                </script>
+{% endblock content %}
