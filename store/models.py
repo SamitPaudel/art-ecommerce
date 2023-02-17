@@ -27,9 +27,19 @@ class Artwork(models.Model):
     def get_url(self):
         return reverse('artwork_detail', args=[self.genre.slug, self.slug])
 
-
     def __str__(self):
         return str(self.artwork_title)
+
+    def get_absolute_url(self):
+        return reverse('artwork_detail', kwargs={'artwork_id': self.id})
+
+    def user_liked_artwork(self, user):
+        try:
+            user_liked_artwork = UserLikedArtwork.objects.get(user=user, artwork=self)
+            return user_liked_artwork
+        except UserLikedArtwork.DoesNotExist:
+            return None
+
 
 class ArtworkComment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -39,3 +49,11 @@ class ArtworkComment(models.Model):
 
     def __str__(self):
         return self.content[:100]
+
+
+class UserLikedArtwork(models.Model):
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return (str(self.user) + str(self.artwork))

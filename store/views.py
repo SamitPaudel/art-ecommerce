@@ -1,15 +1,17 @@
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
-from artist.models import Artist
+from django.urls import reverse
+
 from carts.models import CartItem
 from carts.views import _cart_id
 from genre.models import Genre
 from medium.models import Medium
-from store.models import Artwork, ArtworkComment
+from store.models import Artwork, ArtworkComment, UserLikedArtwork
 
 
 def store(request, genres_slug=None):
@@ -32,8 +34,8 @@ def store(request, genres_slug=None):
         artworks_count = artworks.count()
 
     context = {
-            'artworks': paged_artworks,
-            'artworks_count': artworks_count
+        'artworks': paged_artworks,
+        'artworks_count': artworks_count
     }
 
     return render(request, 'home.html', context)
@@ -65,55 +67,50 @@ def store_medium(request, mediums_slug=None):
     return render(request, 'home.html', context)
 
 
-
 def artwork_detail(request, genres_slug, artwork_slug):
     try:
         single_artwork = Artwork.objects.get(genre__slug=genres_slug, slug=artwork_slug)
         in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), artwork=single_artwork).exists()
         artwork_comments = ArtworkComment.objects.filter(artwork=single_artwork)
+        user = request.user
+        user_liked_artwork = UserLikedArtwork.objects.filter(user=user, artwork=single_artwork).exists()
 
         if request.method == 'POST' and request.user.is_authenticated:
-            comment_content = request.POST.get('comment_content')
-            user = request.user
-            artwork_comment = ArtworkComment(user=user, artwork=single_artwork, content=comment_content)
-            artwork_comment.save()
+            if user_liked_artwork:
+                # user has already liked this artwork, so remove the like
+                user_liked_artwork = UserLikedArtwork.objects.get(user=user, artwork=single_artwork)
+                user_liked_artwork.delete()
+            else:
+                # user has not liked this artwork yet, so add the like
+                user_liked_artwork = UserLikedArtwork(user=user, artwork=single_artwork)
+                user_liked_artwork.save()
 
-    except Exception as e:
-        raise e
+            # redirect back to the same artwork detail page
+            return HttpResponseRedirect(reverse('artwork_detail', args=[genres_slug, artwork_slug]))
+
+    except Artwork.DoesNotExist:
+        raise Http404("Artwork does not exist")
 
     context = {
         'single_artwork': single_artwork,
         'in_cart': in_cart,
         'artwork_comments': artwork_comments,
+        'user_liked_artwork': user_liked_artwork
     }
 
     return render(request, 'artwork_detail.html', context)
 
 
-def price_selection(request):
-    artwork = Artwork.objects.all()
-
-    # Get minimum and maximum prices from request parameters
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-
-    # Filter artwork by price range
-    if min_price and max_price:
-        artwork = artwork.filter(price__gte=min_price, price__lte=max_price)
-
-    context = {
-        'artwork': artwork,
-    }
-    return render(request, 'home.html', context)
-
 def search(request):
+    artworks = None
+    artworks_count = None
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         if keyword:
             artworks = Artwork.objects.filter(
                 Q(artwork_title__icontains=keyword) |
                 Q(description__icontains=keyword)
-                #| Q(artist_name__contains=keyword)
+                # | Q(artist_name__contains=keyword)
             )
             artworks_count = artworks.count()
 
@@ -124,3 +121,19 @@ def search(request):
     return render(request, 'home.html', context)
 
 
+@login_required
+def toggle_like_artwork(request, artwork_id):
+    artwork = get_object_or_404(Artwork, pk=artwork_id)
+
+    if request.method == 'POST':
+        user = request.user
+        user_liked_artwork, created = UserLikedArtwork.objects.get_or_create(user=user, artwork=artwork)
+
+        if not created:
+            user_liked_artwork.delete()
+
+    context = {
+        'user_liked_artwork': UserLikedArtwork.objects.filter(user=request.user, artwork=artwork).exists()
+    }
+
+    return JsonResponse(context)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from store.models import Artwork, ArtworkComment
+from store.models import Artwork, ArtworkComment, UserLikedArtwork
 
 
 class ArtworkAdmin(admin.ModelAdmin):
@@ -12,3 +12,4 @@ class ArtworkAdmin(admin.ModelAdmin):
 
 admin.site.register(Artwork, ArtworkAdmin)
 admin.site.register(ArtworkComment)
+admin.site.register(UserLikedArtwork)

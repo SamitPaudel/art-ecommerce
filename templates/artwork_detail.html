@@ -3,84 +3,102 @@
 
 {% block content %}
     <section class="section-content padding-y bg">
-<div class="container">
+        <div class="container">
 
-<!-- ============================ COMPONENT 1 ================================= -->
-<div class="card">
-	<div class="row no-gutters">
-		<aside class="col-md-6">
-<article class="gallery-wrap">
-	<div class="img-big-wrap">
-	   <a href="#"><img src="{{ single_artwork.image.url }}"></a>
-	</div> <!-- img-big-wrap.// -->
+            <!-- ============================ COMPONENT 1 ================================= -->
+            <div class="card">
+                <div class="row no-gutters">
+                    <aside class="col-md-6">
+                        <article class="gallery-wrap">
+                            <div class="img-big-wrap">
+                                <a href="#"><img src="{{ single_artwork.image.url }}"></a>
+                            </div> <!-- img-big-wrap.// -->
 
-</article> <!-- gallery-wrap .end// -->
-		</aside>
-		<main class="col-md-6 border-left">
-<article class="content-body">
+                        </article> <!-- gallery-wrap .end// -->
+                    </aside>
+                    <main class="col-md-6 border-left">
+                        <article class="content-body">
 
-<h2 class="title">{{ single_artwork.artwork_title }}</h2>
+                            <h2 class="title">{{ single_artwork.artwork_title }}</h2>
 
-<div class="mb-3">
-	<var class="price h4">Rs. {{ single_artwork.price }}</var>
-</div>
+                            <div class="mb-3">
+                                <var class="price h4">Rs. {{ single_artwork.price }}</var>
+                            </div>
 
-<p>{{ single_artwork.description }}</p>
+                            <p>{{ single_artwork.description }}</p>
 
-{% if in_cart %}
-	<a href="" class="btn  btn-success disabled"> <span class="text">Added to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
-	<a href="{% url 'cart' %}" class="btn  btn-primary "> <span class="text">View cart</span> <i class="fas fa-shopping-cart"></i>  </a>
-{% else %}
-	<a href="{% url 'add_cart' single_artwork.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
-{% endif %}
-</article> <!-- product-info-aside .// -->
-		</main> <!-- col.// -->
-	</div> <!-- row.// -->
-</div> <!-- card.// -->
-<!-- ============================ COMPONENT 1 END .// ================================= -->
+                            {% if in_cart %}
+                                <a href="" class="btn  btn-success disabled"> <span class="text">Added to cart</span> <i
+                                        class="fas fa-shopping-cart"></i> </a>
+                                <a href="{% url 'cart' %}" class="btn  btn-primary "> <span
+                                        class="text">View cart</span> <i class="fas fa-shopping-cart"></i> </a>
+                            {% else %}
+                                <a href="{% url 'add_cart' single_artwork.id %}" class="btn  btn-primary"> <span
+                                        class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i> </a>
+                            {% endif %}
+                            {# Add to Favorites #}
+                            {% if user.is_authenticated %}
+                                <form method="POST" action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
+                                    {% csrf_token %}
+                                    {% if user_liked_artwork %}
+                                        <input type="hidden" name="action" value="unlike">
+                                        <button type="submit" class="btn btn-danger"><i class="bi bi-heart"></i> Remove from Favorites</button>
+                                    {% else %}
+                                        <input type="hidden" name="action" value="like">
+                                        <button type="submit" class="btn btn-primary"><i class="bi bi-heartbreak"></i> Add to Favorites</button>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </article> <!-- product-info-aside .// -->
+                    </main> <!-- col.// -->
+                </div> <!-- row.// -->
+            </div> <!-- card.// -->
+            <!-- ============================ COMPONENT 1 END .// ================================= -->
 
-<br>
+            <br>
 
-<div class="row">
-			<div class="col-md-9">
+            <div class="row">
+                <div class="col-md-9">
 
-	<header class="section-heading">
-		<h3>Customer Reviews</h3>
+                    <header class="section-heading">
+                        <h3>Comments</h3>
 
-	</header>
+                    </header>
 
-	{% for comment in artwork_comments %}
-        <article class="box mb-3">
-            <div class="icontext w-100">
-                <div class="text">
-                    <span class="date text-muted float-md-right">{{ comment.date }}</span>
-                    <h6 class="mb-1">{{ comment.user.username }}</h6>
-                </div>
-            </div>
+                    {% for comment in artwork_comments %}
+                        <article class="box mb-3">
+                            <div class="icontext w-100">
+                                <div class="text">
+                                    <span class="date text-muted float-md-right">{{ comment.date }}</span>
+                                    <h6 class="mb-1">{{ comment.user.username }}</h6>
+                                </div>
+                            </div>
 
-            <div class="mt-3">
-                <p>{{ comment.content }}</p>
-            </div>
-        </article>
-    {% endfor %}
+                            <div class="mt-3">
+                                <p>{{ comment.content }}</p>
+                            </div>
+                        </article>
+                    {% endfor %}
 
-    {% if user.is_authenticated %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <textarea class="form-control" id="comment_content" name="comment_content" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Comment</button>
-        </form>
-    {% else %}
-        <p>You must be logged in to post a comment.</p>
-    {% endif %}
+                    {% if user.is_authenticated %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <textarea class="form-control" id="comment_content" name="comment_content"
+                                          rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Comment</button>
+                        </form>
+                    {% else %}
+                        <p>You must be logged in to post a comment.</p>
+                    {% endif %}
 
-	</div> <!-- col.// -->
-</div> <!-- row.// -->
+                </div> <!-- col.// -->
+            </div> <!-- row.// -->
 
 
-</div> <!-- container .//  -->
-</section>
-<!-- ========================= SECTION CONTENT END// ========================= -->
+        </div> <!-- container .//  -->
+    </section>
+    <!-- ========================= SECTION CONTENT END// ========================= -->
+
 {% endblock %}
