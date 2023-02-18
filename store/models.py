@@ -23,6 +23,7 @@ class Artwork(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='photos/artworks', blank=False)
+    isAvailable = models.BooleanField(default=True)
 
     def get_url(self):
         return reverse('artwork_detail', args=[self.genre.slug, self.slug])
