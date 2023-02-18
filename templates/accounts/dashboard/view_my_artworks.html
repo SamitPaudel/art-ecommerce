@@ -1,0 +1,72 @@
+{% extends 'dashboard.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+        {% include 'includes/alerts.html' %}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item active" href="{% url 'view_my_artwork' %}">View My Artworks
+                            </a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+
+                {% block content-2 %}
+                    <div class="row">
+                        {% if artworks %}
+                            {% for artwork in artworks %}
+                                <div class="col-md-5">
+                                    <figure class="card card-product-grid">
+                                        <div class="img-wrap">
+                                            <a href="{{ artwork.get_url }}"><img src="{{ artwork.image.url }}"></a>
+                                        </div> <!-- img-wrap.// -->
+                                        <figcaption class="info-wrap">
+                                            <div class="fix-height">
+                                                <a href="{{ artwork.get_url }}"
+                                                   class="title">{{ artwork.artwork_title }}</a>
+                                                <span class="price">${{ artwork.price }}</span>
+                                                <div class="artist-name">
+                                                    <a href="{{ artwork.artist_name.artist_email.get_absolute_url }}"
+                                                       class="name">{{ artwork.artist_name.artist_name }}</a>
+                                                </div>
+                                            </div>
+                                            <div class="bottom-wrap">
+                                                <a href="{% url 'delete_artwork' artwork.id %}" class="btn btn-sm btn-danger float-right ml-2">Delete</a>
+                                                <a href="{% url 'edit_artwork' artwork.id %}"
+                                                   class="btn btn-sm btn-primary float-right">Edit</a>
+                                            </div>
+                                        </figcaption>
+                                    </figure>
+                                </div> <!-- col.// -->
+                            {% endfor %}
+                        {% else %}
+                            <div>
+                                <h6 class="text-center">Nothing found. Try again with another search term.</h6>
+                            </div>
+                        {% endif %}
+                    </div> <!-- row end.// -->
+                {% endblock %}
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

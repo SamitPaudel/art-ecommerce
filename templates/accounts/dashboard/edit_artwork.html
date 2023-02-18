@@ -1,0 +1,91 @@
+{% extends 'dashboard.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+        {% include 'includes/alerts.html' %}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item active" href="{% url 'view_my_artwork' %}">View My Artworks
+                            </a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+
+                {% block content-2 %}
+                    <main class="col-md-9">
+                        <h2>Upload Artwork</h2>
+                        <article class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+
+                                    </div>
+                                </div>
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label>Title</label>
+                                        {{ form.artwork_title|add_class:"form-control"|attr:"placeholder:Artwork Title"|attr:"autocomplete:off" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Medium</label>
+                                        {{ form.medium_title|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Genre</label>
+                                        {{ form.genre|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Height (in)</label>
+                                        {{ form.height|add_class:"form-control"|attr:"placeholder:Height in Inches"|attr:"autocomplete:off" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Width (in)</label>
+                                        {{ form.width|add_class:"form-control"|attr:"placeholder:Width in Inches"|attr:"autocomplete:off" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        {{ form.description|add_class:"form-control"|attr:"placeholder:Description"|attr:"rows:4" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Price</label>
+                                        {{ form.price|add_class:"form-control"|attr:"placeholder:Price in NRs"|attr:"autocomplete:off" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <img id="artwork-preview" src="#" alt="Artwork Preview"
+                                             style="display: none; width: 150px; height: 150px">
+                                        {{ form.image|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                    </div>
+                    </div>
+
+                {% endblock %}
+        </div>
+        </div>
+    </section>
+
+{% endblock %}

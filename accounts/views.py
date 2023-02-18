@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.views.decorators.http import require_POST
 
 from accounts.forms import RegistrationForm, UpdateForm, ArtPortfolioForm
 from accounts.models import Account, ArtPortfolio
@@ -15,6 +16,7 @@ from artist.forms import ArtworkForm
 from artist.models import Artist
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
+from store.models import Artwork
 
 
 def register(request):
@@ -186,3 +188,34 @@ def upload_artwork(request):
 
     context = {'form': form}
     return render(request, 'accounts/dashboard/upload_artwork.html', context)
+
+
+@login_required
+def view_my_artworks(request):
+    artworks = Artwork.objects.filter(artist_name=request.user.artist).order_by('-date_added')
+    context = {'artworks': artworks}
+    return render(request, 'accounts/dashboard/view_my_artworks.html', context)
+
+@login_required
+def edit_artwork(request, artwork_id):
+    artwork = get_object_or_404(Artwork, id=artwork_id)
+    if request.method == 'POST':
+        form = ArtworkForm(request.POST, request.FILES, instance=artwork)
+        if form.is_valid():
+            form.save()
+            return redirect('view_my_artwork')
+    else:
+        form = ArtworkForm(instance=artwork)
+    return render(request, 'accounts/dashboard/edit_artwork.html', {'form': form, 'artwork': artwork})
+
+@login_required
+@require_POST
+def delete_artwork(request, artwork_id):
+    try:
+        artwork = Artwork.objects.get(id=artwork_id, artist_name=request.user)
+        artwork.delete()
+        return JsonResponse({})
+    except Artwork.DoesNotExist:
+        return JsonResponse({"error": "Artwork not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

@@ -10,12 +10,16 @@
                 <aside class="col-md-3">
                     <!--   SIDEBAR   -->
                     <ul class="list-group">
-                        <a class="list-group-item active" href="{% url 'update_profile' %}">Edit Profile</a>
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
                         {% if not user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art Portfolio</a>
                         {% endif %}
                         {% if user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'view_my_artwork' %}">View My Artworks
                             </a>
                         {% endif %}
                     </ul>
