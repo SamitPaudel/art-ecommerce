@@ -11,7 +11,12 @@
                         <a class="list-group-item active" href="{% url 'update_profile' %}">Edit Profile</a>
                         {% if not user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
-                                Portfolio</a>
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
                         {% endif %}
                     </ul>
                     <br>
@@ -27,7 +32,6 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-8">
-
                                         <form action="{% url 'update_profile' %}" method="POST">
                                             {% csrf_token %}
                                             <div class="form-group">

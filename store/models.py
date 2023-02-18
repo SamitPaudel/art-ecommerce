@@ -1,6 +1,7 @@
 from django.db import models
 
 # Create your models here.
+from django.template.defaultfilters import slugify
 from django.urls import reverse
 
 from accounts.models import Account
@@ -33,6 +34,11 @@ class Artwork(models.Model):
 
     def get_absolute_url(self):
         return reverse('artwork_detail', kwargs={'artwork_id': self.id})
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.artwork_title)
+        super(Artwork, self).save(*args, **kwargs)
 
     def user_liked_artwork(self, user):
         try:

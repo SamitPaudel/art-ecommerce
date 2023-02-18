@@ -11,6 +11,8 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from accounts.forms import RegistrationForm, UpdateForm, ArtPortfolioForm
 from accounts.models import Account, ArtPortfolio
+from artist.forms import ArtworkForm
+from artist.models import Artist
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
 
@@ -167,3 +169,20 @@ def submit_portfolio(request):
         form = ArtPortfolioForm()
     return render(request, 'accounts/dashboard/submit_portfolio.html', {'form': form})
 
+
+@login_required
+def upload_artwork(request):
+    if request.method == 'POST':
+        form = ArtworkForm(request.POST, request.FILES)
+        if form.is_valid():
+            artwork = form.save(commit=False)
+            artist = Artist.objects.get(artist_email=request.user)
+            artwork.artist_name = artist
+            artwork.save()
+            messages.success(request, 'Your artwork has been uploaded.')
+            return redirect('dashboard')
+    else:
+        form = ArtworkForm()
+
+    context = {'form': form}
+    return render(request, 'accounts/dashboard/upload_artwork.html', context)

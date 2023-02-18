@@ -1,4 +1,5 @@
 {% extends 'dashboard.html' %}
+{% load widget_tweaks %}
 {% block content %}
     <section class="section-content padding-y bg">
 
@@ -8,10 +9,15 @@
                 <aside class="col-md-3">
                     <!--   SIDEBAR   -->
                     <ul class="list-group">
-                        <a class="list-group-item active" href="{% url 'update_profile' %}">Edit Profile</a>
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
                         {% if not user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
-                                Portfolio</a>
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item active" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
                         {% endif %}
                     </ul>
                     <br>
@@ -27,36 +33,44 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-8">
-
-                                        <form action="{% url 'update_profile' %}" method="POST">
+                                        <form action="{% url 'upload_artwork' %}" method="POST"
+                                              enctype="multipart/form-data">
                                             {% csrf_token %}
                                             <div class="form-group">
-                                                <label>Change Full Name</label>
-                                                <input type="text" class="form-control" placeholder="Full Name"
-                                                       name="full_name" value="{{ user.full_name }}">
-                                            </div> <!-- form-group// -->
-                                            <div class="form-group">
-                                                <label>Change Username</label>
-                                                <input type="text" class="form-control" placeholder="Username"
-                                                       name="username" value="{{ user.username }}">
-                                            </div> <!-- form-group// -->
-
-                                            {% if request.user.profileImage %}
-                                                <img style="width: 150px; height: 150px;"
-                                                     src="{{ request.user.profileImage.url }}"
-                                                     alt="{{ request.user.full_name }} profile picture" width="100"
-                                                     height="180">
-                                            {% else %}
-                                                <p>No profile picture found.</p>
-                                            {% endif %}
-
-                                            <div class="mb-3">
-                                                <label for="profileImage" class="form-label">Change Profile
-                                                    Image</label>
-                                                <input class="form-control" type="file" id="formFile">
+                                                <label>Title</label>
+                                                {{ form.artwork_title|add_class:"form-control"|attr:"placeholder:Artwork Title"|attr:"autocomplete:off" }}
                                             </div>
                                             <div class="form-group">
-                                                <button type="submit" class="btn btn-primary ">Change</button>
+                                                <label>Medium</label>
+                                                {{ form.medium_title|add_class:"form-control" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Genre</label>
+                                                {{ form.genre|add_class:"form-control" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Height (in)</label>
+                                                {{ form.height|add_class:"form-control"|attr:"placeholder:Height in Inches"|attr:"autocomplete:off" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Width (in)</label>
+                                                {{ form.width|add_class:"form-control"|attr:"placeholder:Width in Inches"|attr:"autocomplete:off" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Description</label>
+                                                {{ form.description|add_class:"form-control"|attr:"placeholder:Description"|attr:"rows:4" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Price</label>
+                                                {{ form.price|add_class:"form-control"|attr:"placeholder:Price in NRs"|attr:"autocomplete:off" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <img id="artwork-preview" src="#" alt="Artwork Preview"
+                                                     style="display: none; width: 150px; height: 150px">
+                                                {{ form.image|add_class:"form-control" }}
+                                            </div>
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Upload</button>
                                             </div>
                                         </form>
                                     </div>
@@ -64,6 +78,25 @@
                             </div>
                         </article>
                     </main>
+                    <script>
+                        function previewArtwork(input) {
+                            if (input.files && input.files[0]) {
+                                var reader = new FileReader();
+                                reader.onload = function (e) {
+                                    $('#artwork-preview').attr('src', e.target.result);
+                                    $('#artwork-preview').css('display', 'block');
+                                }
+                                reader.readAsDataURL(input.files[0]);
+                            }
+                        }
+
+                        $("#id_image").change(function () {
+                            previewArtwork(this);
+                        });
+                    </script>
                 {% endblock %}
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
