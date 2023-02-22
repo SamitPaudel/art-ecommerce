@@ -64,3 +64,5 @@ class UserLikedArtwork(models.Model):
 
     def __str__(self):
         return (str(self.user) + str(self.artwork))
+
+
