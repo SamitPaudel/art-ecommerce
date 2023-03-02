@@ -7,4 +7,5 @@ urlpatterns = [
     path('mediums/<slug:mediums_slug>', views.store_medium, name='artwork_by_mediums'),
     path('search/', views.search, name='search'),
     path('<slug:genres_slug>/<slug:artwork_slug>/', views.artwork_detail, name='artwork_detail'),
+    # path('place-bid/<slug:artwork_slug>/', views.place_bid, name='place_bid'),
 ]

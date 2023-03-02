@@ -1,8 +1,11 @@
+from datetime import timezone
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.http import JsonResponse, HttpResponseRedirect, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 
 # Create your views here.
 from django.urls import reverse
@@ -11,7 +14,8 @@ from carts.models import CartItem
 from carts.views import _cart_id
 from genre.models import Genre
 from medium.models import Medium
-from store.models import Artwork, ArtworkComment, UserLikedArtwork
+from store.forms import AuctionForm, BidForm
+from store.models import Artwork, ArtworkComment, UserLikedArtwork, Auction, Bid
 
 
 def store(request, genres_slug=None):
@@ -74,6 +78,8 @@ def artwork_detail(request, genres_slug, artwork_slug):
         artwork_comments = ArtworkComment.objects.filter(artwork=single_artwork)
         user = request.user
         user_liked_artwork = UserLikedArtwork.objects.filter(user=user, artwork=single_artwork).exists()
+        auction = Auction.objects.filter(artwork=single_artwork, is_active=True).first()
+        bid_form = BidForm(request.POST or None)
 
         if request.method == 'POST' and request.user.is_authenticated:
             if user_liked_artwork:
@@ -85,8 +91,30 @@ def artwork_detail(request, genres_slug, artwork_slug):
                 user_liked_artwork = UserLikedArtwork(user=user, artwork=single_artwork)
                 user_liked_artwork.save()
 
+            # Check if the user placed a bid
+            if bid_form.is_valid():
+                bid_amount = bid_form.cleaned_data['amount']
+                if auction:
+                    if bid_amount <= auction.current_bid:
+                        messages.error(request, 'Your bid must be higher than the current bid.')
+                    else:
+                        bid = Bid.objects.create(
+                            auction=auction,  # associate the bid with the auction
+                            bid_time=timezone.now(),
+                            user=request.user,
+                            amount=bid_amount,
+                        )
+                        bid.save()
+                        messages.success(request, 'Your bid has been placed successfully.')
+
+                else:
+                    messages.error(request, 'Bidding for this artwork is not currently open.')
+            else:
+                messages.error(request, 'Invalid bid amount.')
+
             # redirect back to the same artwork detail page
-            return HttpResponseRedirect(reverse('artwork_detail', args=[genres_slug, artwork_slug]))
+            return HttpResponseRedirect(
+                reverse('artwork_detail', kwargs={'genres_slug': genres_slug, 'artwork_slug': artwork_slug}))
 
     except Artwork.DoesNotExist:
         raise Http404("Artwork does not exist")
@@ -95,8 +123,17 @@ def artwork_detail(request, genres_slug, artwork_slug):
         'single_artwork': single_artwork,
         'in_cart': in_cart,
         'artwork_comments': artwork_comments,
-        'user_liked_artwork': user_liked_artwork
+        'user_liked_artwork': user_liked_artwork,
+        'auction': auction,
+        'bid_form': bid_form,
     }
+
+    if auction:
+        highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
+        if highest_bid is not None:
+            context['highest_bid'] = highest_bid
+        else:
+            context['highest_bid'] = auction.starting_price
 
     return render(request, 'artwork_detail.html', context)
 

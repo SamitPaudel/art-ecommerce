@@ -1,10 +1,14 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Create your models here.
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.utils import timezone
 
 from accounts.models import Account
+from art_ecommerce import settings
 from artist.models import Artist
 from genre.models import Genre
 from medium.models import Medium
@@ -47,6 +51,22 @@ class Artwork(models.Model):
         except UserLikedArtwork.DoesNotExist:
             return None
 
+    @property
+    def is_auction_active(self):
+        try:
+            auction = Auction.objects.filter(artwork=self, is_active=True).latest('start_time')
+            return True
+        except Auction.DoesNotExist:
+            return False
+
+    @property
+    def auction(self):
+        try:
+            auction = Auction.objects.filter(artwork=self, is_active=True).latest('start_time')
+            return auction
+        except Auction.DoesNotExist:
+            return None
+
 
 class ArtworkComment(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -66,3 +86,38 @@ class UserLikedArtwork(models.Model):
         return (str(self.user) + str(self.artwork))
 
 
+class Auction(models.Model):
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+    description = models.TextField()
+    start_time = models.DateTimeField(default=timezone.now)
+    starting_price = models.IntegerField(default=0)
+    bid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.SET_NULL, related_name='auction_bid')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'Auction for {self.artwork.artwork_title}'
+
+    def get_bids(self):
+        return self.bids.all().order_by('-bid_time')
+
+    def save(self, *args, **kwargs):
+        if not self.starting_price:
+            self.starting_price = self.artwork.price
+        super().save(*args, **kwargs)
+
+class Bid(models.Model):
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')
+    bid_time = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.user} bid {self.amount} on {self.auction}'
+
+    class Meta:
+        ordering = ['-bid_time']
+
+    # def clean(self):
+    #     highest_bid_amount = self.auction.get_bids().first().amount if self.auction.get_bids().exists() else self.auction.starting_price
+    #     if self.amount <= highest_bid_amount:
+    #         raise ValidationError('Bid must be higher than previous bid')

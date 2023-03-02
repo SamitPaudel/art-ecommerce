@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.http import require_POST
@@ -16,7 +17,8 @@ from artist.forms import ArtworkForm
 from artist.models import Artist
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
-from store.models import Artwork
+from store.forms import AuctionForm
+from store.models import Artwork, Auction
 
 
 def register(request):
@@ -28,7 +30,8 @@ def register(request):
             phone_number = form.cleaned_data['phone_number']
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = Account.objects.create_user(full_name=full_name, email=email, phone_number=phone_number, username=username, password=password)
+            user = Account.objects.create_user(full_name=full_name, email=email, phone_number=phone_number,
+                                               username=username, password=password)
             user.phone_number = phone_number
             user.is_active = True
             user.save()
@@ -72,14 +75,14 @@ def login(request):
     return render(request, 'accounts/login.html')
 
 
-@login_required(login_url = 'login')
+@login_required(login_url='login')
 def logout(request):
     auth.logout(request)
     messages.success(request, "You are logged out!")
     return redirect('login')
 
 
-@login_required(login_url = 'login')
+@login_required(login_url='login')
 def dashboard(request):
     return render(request, 'dashboard.html')
 
@@ -91,14 +94,14 @@ def forgot_password(request):
             user = Account.objects.get(email__iexact=email)
             current_site = get_current_site(request)
             mail_subject = 'Link for reseting password for forgotten password.'
-            message = render_to_string('accounts/forgotton_password_email.html',{
+            message = render_to_string('accounts/forgotton_password_email.html', {
                 'user': user,
                 'domain': current_site,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user)
             })
             to_email = email
-            send_email = EmailMessage(mail_subject,message, to=[to_email])
+            send_email = EmailMessage(mail_subject, message, to=[to_email])
             send_email.send()
 
             messages.success(request, "Password reset email has been sent to you email address.")
@@ -122,6 +125,8 @@ def reset_password(request, uidb64, token):
     else:
         messages.error(request, 'This link has been expired')
         return redirect('login')
+
+
 def resetPassword(request):
     if request.method == 'POST':
         password = request.POST['password']
@@ -196,6 +201,7 @@ def view_my_artworks(request):
     context = {'artworks': artworks}
     return render(request, 'accounts/dashboard/view_my_artworks.html', context)
 
+
 @login_required
 def edit_artwork(request, artwork_id):
     artwork = get_object_or_404(Artwork, id=artwork_id)
@@ -208,6 +214,7 @@ def edit_artwork(request, artwork_id):
         form = ArtworkForm(instance=artwork)
     return render(request, 'accounts/dashboard/edit_artwork.html', {'form': form, 'artwork': artwork})
 
+
 @login_required
 @require_POST
 def delete_artwork(request, artwork_id):
@@ -219,3 +226,32 @@ def delete_artwork(request, artwork_id):
         return JsonResponse({"error": "Artwork not found."}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+@login_required
+def start_auction(request, artwork_id):
+    artwork = get_object_or_404(Artwork, id=artwork_id)
+
+    try:
+        auction = Auction.objects.get(artwork=artwork)
+    except Auction.DoesNotExist:
+        auction = None
+
+    if auction:
+        if auction.is_active:
+            bids = auction.bids.all().order_by('-amount')
+            return render(request, 'accounts/dashboard/start_auction.html', {'bids': bids, 'artwork': artwork, 'auction': auction})
+        else:
+            messages.error(request, 'Auction has already ended for this artwork')
+            return redirect('dashboard')
+    else:
+        if request.method == 'POST':
+            form = AuctionForm(request.POST)
+            if form.is_valid():
+                auction = form.save(commit=False)
+                auction.artwork = artwork
+                auction.save()
+                return redirect('dashboard')
+        else:
+            form = AuctionForm(initial={'starting_price': artwork.price})
+        return render(request, 'accounts/dashboard/start_auction.html', {'form': form, 'artwork': artwork})

@@ -14,6 +14,7 @@ urlpatterns = [
     path('dashboard/view_my_artwork/', views.view_my_artworks, name='view_my_artwork'),
     path('dashboard/edit_artwork/<int:artwork_id>/', views.edit_artwork, name='edit_artwork'),
     path('dashboard/delete_artwork/<int:artwork_id>/', views.delete_artwork, name='delete_artwork'),
+    path('start-auction/<int:artwork_id>/', views.start_auction, name='start_auction'),
     path('resetpassword_validate/<uidb64>/<token>/', reset_password, name='reset_password'),
     path('forgotpassword/', views.forgot_password, name='forgot_password'),
     path('resetPassword/', views.resetPassword, name='resetPassword'),

@@ -50,9 +50,14 @@
                                                 </div>
                                             </div>
                                             <div class="bottom-wrap">
-                                                <a href="{% url 'delete_artwork' artwork.id %}" class="btn btn-sm btn-danger float-right ml-2">Delete</a>
+                                                <a href="{% url 'delete_artwork' artwork.id %}"
+                                                   class="btn btn-sm btn-danger float-right ml-2">Delete</a>
                                                 <a href="{% url 'edit_artwork' artwork.id %}"
                                                    class="btn btn-sm btn-primary float-right">Edit</a>
+                                            </div>
+                                            <div class="bottom-wrap">
+                                                <a href="{% url 'start_auction' artwork.id %}"
+                                                   class="btn btn-sm btn-light float-right ml-2">Auction</a>
                                             </div>
                                         </figcaption>
                                     </figure>
