@@ -20,8 +20,8 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
 
-
     def __str__(self):
-        return self.artwork
+        return f"{self.user.full_name} - {self.artwork.artwork_title}"
+
 
 

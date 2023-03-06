@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="card">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <h1 class="text-center mb-5">Place Bid</h1>
+
+                    <p><strong>Auction:</strong> {{ auction }}</p>
+
+                    <p><strong>Starting Price:</strong> Rs.{{ auction.artwork.price }}</p>
+
+                    {% if messages %}
+                        {% if messages %}
+                            <div class="alert alert-info messages" role="alert">
+                                {% for message in messages %}
+                                    {{ message }}<br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Bid Amount</th>
+                            <th>Bid Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for bid in current_bids %}
+                            <tr {% if forloop.first %}class="first-row"{% endif %}>
+                                <td>{{ bid.user }}</td>
+                                <td>{{ bid.amount }}</td>
+                                <td>{{ bid.bid_time }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No bids have been placed yet.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {% if field.name == 'amount' %}
+                                    {% if highest_bid %}
+                                        {% if field.value|floatformat:2 >= highest_bid %}
+                                            {{ field }}
+                                        {% else %}
+                                            <input type="number" class="form-control is-invalid" name="{{ field.name }}"
+                                                   id="{{ field.id_for_label }}" step="0.01" min="{{ highest_bid }}"
+                                                   value="{{ field.value }}" required>
+                                            <div class="invalid-feedback">Bid amount should be greater than
+                                                the current highest bid.
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        {{ field }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                                {% if field.errors %}
+                                    <ul class="errors">
+                                        {% for error in field.errors %}
+                                            <li class="text-danger">{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary mt-3">Place Bid</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr.first-row {
+            background-color: #a6ffbf;
+        }
+
+        tr:not(.first-row):nth-child(even) {
+            background-color: #fff9f9;
+        }
+
+        tr:not(.first-row):nth-child(odd) {
+            background-color: #ffecec;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            // Fade out the messages after 5 seconds
+            $('.messages').delay(5000).fadeOut('slow');
+        });
+    </script>
+{% endblock %}

@@ -21,7 +21,7 @@
                             <h2 class="title">{{ single_artwork.price }}</h2>
                             <p>{{ single_artwork.description }}</p>
                             {% if single_artwork.auction.is_active %}
-                                <table class="table">
+                                <table class="table scrollable-table">
                                     <thead>
                                     <tr>
                                         <th scope="col">Bid Price</th>
@@ -44,18 +44,7 @@
                                     </tbody>
                                 </table>
                                 {% if user.is_authenticated %}
-                                    <form method="POST"
-                                          action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
-                                        {% csrf_token %}
-                                        <div class="form-group">
-                                            {{ bid_form.amount.label_tag }}
-                                            {{ bid_form.amount }}
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Place Bid</button>
-                                    </form>
-                                {% else %}
-                                    <p>You need to be logged in to place a bid.</p>
-                                    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                                    <a href="{% url 'place_bid' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}" class="btn btn-primary">Place Bid</a>
                                 {% endif %}
                             {% else %}
                                 <div class="mb-3">
@@ -82,26 +71,26 @@
                             {% endif %}
 
                             {% if user.is_authenticated %}
-                            <form method="POST"
-                                  action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
-                                {% csrf_token %}
-                                {% if user_liked_artwork %}
-                                    <input type="hidden" name="action" value="unlike">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-heart"></i> Remove from Favorites
-                                    </button>
-                                {% else %}
-                                    <input type="hidden" name="action" value="like">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="bi bi-heartbreak"></i> Add to Favorites
-                                    </button>
-                                {% endif %}
-                            </form>
+                                <form method="POST"
+                                      action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
+                                    {% csrf_token %}
+                                    {% if user_liked_artwork %}
+                                        <input type="hidden" name="action" value="unlike">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-heart"></i> Remove from Favorites
+                                        </button>
+                                    {% else %}
+                                        <input type="hidden" name="action" value="like">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-heartbreak"></i> Add to Favorites
+                                        </button>
+                                    {% endif %}
+                                </form>
                             {% else %}
-                            <p>You need to be logged in to add to Favorites
-                                {% endif %}
+                                <p>You need to be logged in to add to Favorites
+                            {% endif %}
 
-                                <br>
+                            <br>
 
                 </div> <!-- container .//  -->
 
@@ -151,6 +140,12 @@
     </section>
     {# Comment Section #}
     <!-- ========================= SECTION CONTENT END// ========================= -->
+    <style>
+        .scrollable-table {
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+    </style>
 
 {% endblock %}
 

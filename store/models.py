@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -90,6 +92,7 @@ class Auction(models.Model):
     artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
     description = models.TextField()
     start_time = models.DateTimeField(default=timezone.now)
+    end_time = models.DateTimeField(null=True, blank=True)
     starting_price = models.IntegerField(default=0)
     bid = models.ForeignKey('Bid', null=True, blank=True, on_delete=models.SET_NULL, related_name='auction_bid')
     is_active = models.BooleanField(default=True)
@@ -104,6 +107,14 @@ class Auction(models.Model):
         if not self.starting_price:
             self.starting_price = self.artwork.price
         super().save(*args, **kwargs)
+
+        # Set end_time
+        if not self.end_time:
+            if self.bid:
+                self.end_time = self.bid.bid_time + timedelta(minutes=15)
+            else:
+                self.end_time = self.start_time + timedelta(hours=1)
+        self.save(update_fields=['end_time'])
 
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')

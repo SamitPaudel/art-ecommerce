@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -9,12 +10,14 @@ from store.models import Artwork
 
 # to get session key, generate if not available
 global cart_item
+User = get_user_model()
 def _cart_id(request):
     cart = request.session.session_key
     if not cart:
         cart = request.session.create()
     return cart
 
+@login_required
 def add_cart(request, artwork_id):
     artwork = Artwork.objects.get(id=artwork_id)
     try:
@@ -32,14 +35,14 @@ def add_cart(request, artwork_id):
         cart_item.save()
     except CartItem.DoesNotExist:
         cart_item = CartItem.objects.create(
+            user=request.user,
             artwork = artwork,
             cart = cart,
-            # no need is_active as it is True by default
         )
         cart_item.save()
     return redirect('cart')
 
-
+@login_required
 def remove_cart(request, artwork_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     artwork = get_object_or_404(Artwork, id=artwork_id)

@@ -12,16 +12,21 @@ from orders.models import Order
 def payments(request):
     return render(request, 'payments.html')
 
-def place_order(request ):
-    global order_total
+
+def place_order(request):
     current_user = request.user
     cart_items = CartItem.objects.filter(user=current_user)
+    print(cart_items)
     cart_count = cart_items.count()
-    if cart_count <= 0:
-        return redirect('store')
+    order_total = 0 # Define order_total variable and set it to 0
+
+    # if cart_count <= 0:
+    #     return redirect('home')
+    print(cart_count)
 
     for cart_item in cart_items:
-        order_total = cart_item.artwork.price
+        order_total += cart_item.artwork.price
+
     discount = order_total * 0.05
     grand_total = order_total - discount
 
@@ -54,7 +59,7 @@ def place_order(request ):
             order = Order.objects.get(user=current_user, is_ordered=False, order_number=order_number)
             context = {
                 'order': order,
-                'cart_items': cart_items,
+                'cart_items': cart_items, # Pass the cart_items variable to the template context
                 'order_total': order_total,
                 'discount': discount,
                 'grand_total': grand_total
@@ -62,3 +67,6 @@ def place_order(request ):
             return render(request, 'payments.html', context)
         else:
             return redirect('checkout')
+
+def payment_success(request):
+    return render(request, 'payment_success.html')

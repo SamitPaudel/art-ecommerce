@@ -13,17 +13,17 @@
                     <div class="card-body">
                         <p class="card-text mb-0">{{ order.full_name }}</p>
                         <p class="card-text mb-0">{{ order.address }}</p>
-                        <p class="card-text mb-0">{{ order.email}}</p>
-                        <p class="card-text mb-0">{{ order.phone}}</p>
+                        <p class="card-text mb-0">{{ order.email }}</p>
+                        <p class="card-text mb-0">{{ order.phone }}</p>
                         {% if order.order_note %}
-                        <b>Order note: </b>{{ order.order_note }}
+                            <b>Order note: </b>{{ order.order_note }}
                         {% endif %}
                     </div>
                 </div> <!-- card.// -->
                 <div class="card">
                     <h5 class="card-header">Payment Method</h5>
                     <div class="card-body">
-                        <p class="card-text">PayPal</p>
+                        <p class="card-text">Khalti</p>
                     </div>
                 </div>
                 <div class="card">
@@ -84,19 +84,48 @@
                         <p class="text-center mb-3">
                             <img src="{% static './images/misc/payments.png' %}" height="26">
                         </p>
-                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-block"> Make Payment </a>
+                        <button id="checkout-button" class="btn btn-primary btn-block"> Make Payment</button>
                     </div> <!-- card-body.// -->
                 </div> <!-- card.// -->
+                <!-- ========================= SECTION CONTENT END// ========================= -->
 
-            </aside> <!-- col.// -->
+                {#    Khalti Integration    #}
+                <script src="https://khalti.com/static/khalti-checkout.js"></script>
+                <script>
+                    var config = {
+                        "publicKey": "test_public_key_f5e3ba1a137c442d8e718a93c481b15e",
+                        "productIdentity": "{{ order }}",
+                        "productName": "{{ cart_items.0.artwork.artwork_title }}",
+                        "productUrl": "{{ request.build_absolute_uri }}",
+                        "eventHandler": {
+                            onSuccess(payload) {
+                                // The payment was successful. You can update the order status in your backend here.
+                                console.log(payload);
+                                window.location.href = "{% url 'payment_success' %}";
+                            },
+                            onError(error) {
+                                // The payment failed. You can display an error message to the user here.
+                                console.log(error);
+                            },
+                            onClose() {
+                                console.log('widget is closing');
+                            }
+                        }
+                    };
 
+                    var checkout = new KhaltiCheckout(config);
 
-        </div> <!-- row.// -->
+                    var button = document.getElementById("checkout-button");
+                    button.addEventListener("click", function () {
+                        checkout.show({
+                            amount: {{ grand_total }},
+                            mobile: '{{ order.phone }}',
+                            email: '{{ order.email }}'
+                        });
+                    });
+                </script>
 
-        <!-- ============================ COMPONENT 1 END .// ================================= -->
-
-    </div> <!-- container .//  -->
-    </section>
-    <!-- ========================= SECTION CONTENT END// ========================= -->
+                <!-- Khalti JS -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% endblock %}

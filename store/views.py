@@ -79,7 +79,6 @@ def artwork_detail(request, genres_slug, artwork_slug):
         user = request.user
         user_liked_artwork = UserLikedArtwork.objects.filter(user=user, artwork=single_artwork).exists()
         auction = Auction.objects.filter(artwork=single_artwork, is_active=True).first()
-        bid_form = BidForm(request.POST or None)
 
         if request.method == 'POST' and request.user.is_authenticated:
             if user_liked_artwork:
@@ -91,31 +90,6 @@ def artwork_detail(request, genres_slug, artwork_slug):
                 user_liked_artwork = UserLikedArtwork(user=user, artwork=single_artwork)
                 user_liked_artwork.save()
 
-            # Check if the user placed a bid
-            if bid_form.is_valid():
-                bid_amount = bid_form.cleaned_data['amount']
-                if auction:
-                    if bid_amount <= auction.current_bid:
-                        messages.error(request, 'Your bid must be higher than the current bid.')
-                    else:
-                        bid = Bid.objects.create(
-                            auction=auction,  # associate the bid with the auction
-                            bid_time=timezone.now(),
-                            user=request.user,
-                            amount=bid_amount,
-                        )
-                        bid.save()
-                        messages.success(request, 'Your bid has been placed successfully.')
-
-                else:
-                    messages.error(request, 'Bidding for this artwork is not currently open.')
-            else:
-                messages.error(request, 'Invalid bid amount.')
-
-            # redirect back to the same artwork detail page
-            return HttpResponseRedirect(
-                reverse('artwork_detail', kwargs={'genres_slug': genres_slug, 'artwork_slug': artwork_slug}))
-
     except Artwork.DoesNotExist:
         raise Http404("Artwork does not exist")
 
@@ -125,7 +99,6 @@ def artwork_detail(request, genres_slug, artwork_slug):
         'artwork_comments': artwork_comments,
         'user_liked_artwork': user_liked_artwork,
         'auction': auction,
-        'bid_form': bid_form,
     }
 
     if auction:
@@ -174,3 +147,38 @@ def toggle_like_artwork(request, artwork_id):
     }
 
     return JsonResponse(context)
+
+@login_required
+def place_bid(request, genres_slug, artwork_slug):
+    artwork = get_object_or_404(Artwork, genre__slug=genres_slug, slug=artwork_slug)
+    auction = get_object_or_404(Auction, artwork=artwork, is_active=True)
+    current_bids = Bid.objects.filter(auction=auction).order_by('-amount')
+    highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
+
+    if request.method == 'POST':
+        form = BidForm(request.POST, auction=auction, user=request.user)
+        if form.is_valid():
+            bid_amount = form.cleaned_data['amount']
+            if bid_amount > highest_bid:
+                bid = form.save()
+                bid.user = request.user
+                bid.auction = auction
+                bid.save()
+                messages.success(request, 'Your bid has been placed successfully.')
+            else:
+                messages.error(request, 'Your bid must be higher than the current highest bid.')
+
+    else:
+        form = BidForm(auction=auction, user=request.user)  # set initial value of auction and user fields
+
+    context = {
+        'artwork': artwork,
+        'auction': auction,
+        'current_bids': current_bids,
+        'highest_bid': highest_bid,
+        'form': form,
+    }
+
+    return render(request, 'place_bid.html', context)
+
+
