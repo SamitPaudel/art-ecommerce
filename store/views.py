@@ -1,3 +1,4 @@
+import datetime
 from datetime import timezone
 
 from django.contrib import messages
@@ -159,11 +160,18 @@ def place_bid(request, genres_slug, artwork_slug):
         form = BidForm(request.POST, auction=auction, user=request.user)
         if form.is_valid():
             bid_amount = form.cleaned_data['amount']
-            if bid_amount > highest_bid:
-                bid = form.save()
+            if highest_bid is None or bid_amount > highest_bid:
+                bid = form.save(commit=False)
                 bid.user = request.user
                 bid.auction = auction
                 bid.save()
+
+                # update auction end_time to be 15 minutes from latest bid time
+                bid_time = bid.bid_time
+                end_time = bid_time + datetime.timedelta(minutes=15)
+                auction.end_time = end_time
+                auction.save()
+
                 messages.success(request, 'Your bid has been placed successfully.')
             else:
                 messages.error(request, 'Your bid must be higher than the current highest bid.')

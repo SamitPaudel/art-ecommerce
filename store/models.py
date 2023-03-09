@@ -15,6 +15,7 @@ from artist.models import Artist
 from genre.models import Genre
 from medium.models import Medium
 
+tz = timezone.get_current_timezone()
 
 class Artwork(models.Model):
     artwork_title = models.CharField(max_length=500)
@@ -106,15 +107,14 @@ class Auction(models.Model):
     def save(self, *args, **kwargs):
         if not self.starting_price:
             self.starting_price = self.artwork.price
-        super().save(*args, **kwargs)
 
         # Set end_time
         if not self.end_time:
-            if self.bid:
-                self.end_time = self.bid.bid_time + timedelta(minutes=15)
-            else:
-                self.end_time = self.start_time + timedelta(hours=1)
-        self.save(update_fields=['end_time'])
+            self.end_time = timezone.localtime(self.start_time) + timedelta(hours=1)
+        elif self.bid:
+            self.end_time = timezone.localtime(self.bid.bid_time) + timedelta(minutes=15)
+
+        super().save(*args, **kwargs)
 
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')
@@ -128,7 +128,12 @@ class Bid(models.Model):
     class Meta:
         ordering = ['-bid_time']
 
-    # def clean(self):
-    #     highest_bid_amount = self.auction.get_bids().first().amount if self.auction.get_bids().exists() else self.auction.starting_price
-    #     if self.amount <= highest_bid_amount:
-    #         raise ValidationError('Bid must be higher than previous bid')
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.auction:
+            # Update end_time of auction if bid is higher than previous bid
+            if self.amount > self.auction.starting_price:
+                new_end_time = self.bid_time + timedelta(minutes=15)
+                if not self.auction.end_time or new_end_time > self.auction.end_time:
+                    self.auction.end_time = new_end_time
+                    self.auction.save()

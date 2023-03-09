@@ -20,7 +20,10 @@
                             <h2 class="title">{{ single_artwork.artwork_title }}</h2>
                             <h2 class="title">{{ single_artwork.price }}</h2>
                             <p>{{ single_artwork.description }}</p>
+
                             {% if single_artwork.auction.is_active %}
+                                <p>Time Remaining: <span id="timer" style="font-size: 36px; color: red;"></span></p>
+
                                 <table class="table scrollable-table">
                                     <thead>
                                     <tr>
@@ -44,7 +47,8 @@
                                     </tbody>
                                 </table>
                                 {% if user.is_authenticated %}
-                                    <a href="{% url 'place_bid' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}" class="btn btn-primary">Place Bid</a>
+                                    <a href="{% url 'place_bid' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}"
+                                       class="btn btn-primary">Place Bid</a>
                                 {% endif %}
                             {% else %}
                                 <div class="mb-3">
@@ -146,6 +150,36 @@
             overflow-y: scroll;
         }
     </style>
+
+    <script>
+        function countdown_timer(end_time) {
+            const countdown = setInterval(() => {
+                console.log(end_time)
+                {#const end_time_local = new Date(end_time).toLocaleString('en-US', {timeZone: 'Asia/Katmandu'});#}
+                {#console.log(end_time_local)#}
+                const now = new Date().getTime();
+                console.log(now)
+                const distance = new Date(end_time) - now;
+                console.log('Difference:' + distance)
+                const seconds = Math.floor(distance / 1000);
+
+                if (distance <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById("timer").innerHTML = "Auction has ended";
+                } else {
+                    const hours = Math.floor(seconds / 3600);
+                    const minutes = Math.floor((seconds % 3600) / 60);
+                    const remaining_seconds = Math.floor(seconds % 60);
+
+
+                    const formatted_time = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remaining_seconds.toString().padStart(2, "0")}`;
+                    document.getElementById("timer").innerHTML = formatted_time;
+                }
+            }, 1000)
+        }
+        countdown_timer('{{ auction.end_time.isoformat }}');
+    </script>
+
 
 {% endblock %}
 
