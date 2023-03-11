@@ -169,3 +169,17 @@ EMAIL_HOST_PASSWORD = 'kbsygukrwcttzfee'
 EMAIL_USE_TLS = True
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+# Celery Settings:
+# Celery configuration
+CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_RESULT_BACKEND = 'rpc://'
+
+# Schedule tasks every 5 seconds
+CELERY_BEAT_SCHEDULE = {
+    'check-end-time-every-5-seconds': {
+        'task': 'myapp.tasks.check_end_time_task',
+        'schedule': 5.0,
+    },
+}

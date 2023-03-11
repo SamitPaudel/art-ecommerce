@@ -1,3 +1,4 @@
+import threading
 from datetime import timedelta
 
 from django.contrib.auth.models import User
@@ -115,6 +116,8 @@ class Auction(models.Model):
             self.end_time = timezone.localtime(self.bid.bid_time) + timedelta(minutes=15)
 
         super().save(*args, **kwargs)
+
+
 
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='bids')
