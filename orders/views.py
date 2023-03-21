@@ -1,28 +1,26 @@
 import datetime
 
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+import requests
+from django.shortcuts import render, redirect, get_object_or_404
+import requests
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 # Create your views here.
+
+
+from art_ecommerce import settings
 from carts.models import CartItem
 from orders.forms import OrderForm
 from orders.models import Order
 
 
-def payments(request):
-    return render(request, 'payments.html')
-
-
 def place_order(request):
     current_user = request.user
     cart_items = CartItem.objects.filter(user=current_user)
-    print(cart_items)
     cart_count = cart_items.count()
-    order_total = 0 # Define order_total variable and set it to 0
-
-    # if cart_count <= 0:
-    #     return redirect('home')
-    print(cart_count)
+    order_total = 0
 
     for cart_item in cart_items:
         order_total += cart_item.artwork.price
@@ -68,5 +66,6 @@ def place_order(request):
         else:
             return redirect('checkout')
 
-def payment_success(request):
-    return render(request, 'payment_success.html')
+
+
+

@@ -84,48 +84,10 @@
                         <p class="text-center mb-3">
                             <img src="{% static './images/misc/payments.png' %}" height="26">
                         </p>
-                        <button id="checkout-button" class="btn btn-primary btn-block"> Make Payment</button>
+
                     </div> <!-- card-body.// -->
                 </div> <!-- card.// -->
                 <!-- ========================= SECTION CONTENT END// ========================= -->
 
-                {#    Khalti Integration    #}
-                <script src="https://khalti.com/static/khalti-checkout.js"></script>
-                <script>
-                    var config = {
-                        "publicKey": "test_public_key_f5e3ba1a137c442d8e718a93c481b15e",
-                        "productIdentity": "{{ order }}",
-                        "productName": "{{ cart_items.0.artwork.artwork_title }}",
-                        "productUrl": "{{ request.build_absolute_uri }}",
-                        "eventHandler": {
-                            onSuccess(payload) {
-                                // The payment was successful. You can update the order status in your backend here.
-                                console.log(payload);
-                                window.location.href = "{% url 'payment_success' %}";
-                            },
-                            onError(error) {
-                                // The payment failed. You can display an error message to the user here.
-                                console.log(error);
-                            },
-                            onClose() {
-                                console.log('widget is closing');
-                            }
-                        }
-                    };
-
-                    var checkout = new KhaltiCheckout(config);
-
-                    var button = document.getElementById("checkout-button");
-                    button.addEventListener("click", function () {
-                        checkout.show({
-                            amount: {{ grand_total }},
-                            mobile: '{{ order.phone }}',
-                            email: '{{ order.email }}'
-                        });
-                    });
-                </script>
-
-                <!-- Khalti JS -->
-                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% endblock %}

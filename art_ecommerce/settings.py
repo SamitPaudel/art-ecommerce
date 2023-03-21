@@ -14,6 +14,8 @@ from pathlib import Path
 import pytz
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TIME_ZONE = 'Asia/Kathmandu'
@@ -29,7 +31,6 @@ SECRET_KEY = 'django-insecure-2h@u2&#d$k4i9$qrcsoc%jz%^8a1rlbu5$9__1%bemmhle=#-t
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -52,7 +53,9 @@ INSTALLED_APPS = [
     'taggit',
     'crispy_forms',
     'orders',
-    'widget_tweaks'
+    'widget_tweaks',
+    'channels',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -63,10 +66,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'channels.middleware.BaseMiddleware'
 ]
 
 ROOT_URLCONF = 'art_ecommerce.urls'
-
 
 TEMPLATES = [
     {
@@ -92,7 +95,6 @@ WSGI_APPLICATION = 'art_ecommerce.wsgi.application'
 
 AUTH_USER_MODEL = 'accounts.Account'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -102,7 +104,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -122,7 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -134,7 +134,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -143,10 +142,8 @@ STATIC_URL = 'static/'
 STATIC_ROOT = 'art_ecommerce/static'
 
 STATICFILES_DIRS = [
-    BASE_DIR/"static"
+    BASE_DIR / "static"
 ]
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -157,6 +154,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 from django.contrib.messages import constants as messages
+
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
@@ -170,16 +168,22 @@ EMAIL_USE_TLS = True
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+# Celery settings
+CELERY_BROKER_URL = 'redis://localhost:8000'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
 
-# Celery Settings:
-# Celery configuration
-CELERY_BROKER_URL = 'amqp://localhost'
-CELERY_RESULT_BACKEND = 'rpc://'
-
-# Schedule tasks every 5 seconds
+# Celery beat settings
 CELERY_BEAT_SCHEDULE = {
-    'check-end-time-every-5-seconds': {
-        'task': 'myapp.tasks.check_end_time_task',
-        'schedule': 5.0,
+    'check-auction-end-time': {
+        'task': 'path.to.check_auction_end_time',
+        'schedule': crontab(minute='*/1'),
     },
 }
+
+# Khalti
+KHALTI_API_URL = 'https://khalti.com/api/v2/payment/verify/'
+KHALTI_SECRET_KEY = 'test_secret_key_87fcbb337caf44a9a69948165bfa20bf'
