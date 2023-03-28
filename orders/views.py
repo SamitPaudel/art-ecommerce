@@ -65,7 +65,3 @@ def place_order(request):
             return render(request, 'payments.html', context)
         else:
             return redirect('checkout')
-
-
-
-

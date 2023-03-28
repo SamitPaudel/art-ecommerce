@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'channels',
     'django_celery_beat',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'channels.middleware.BaseMiddleware'
 ]
 
 ROOT_URLCONF = 'art_ecommerce.urls'
@@ -92,6 +92,16 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'art_ecommerce.wsgi.application'
+ASGI_APPLICATION = 'art_ecommerce.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 AUTH_USER_MODEL = 'accounts.Account'
 
@@ -184,6 +194,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# Khalti
-KHALTI_API_URL = 'https://khalti.com/api/v2/payment/verify/'
-KHALTI_SECRET_KEY = 'test_secret_key_87fcbb337caf44a9a69948165bfa20bf'
+SOCKETIO_REDIS_HOST = 'localhost'  # Redis server hostname
+SOCKETIO_REDIS_PORT = 6379  # Redis server port number
+SOCKETIO_REDIS_DB = 0  # Redis database number
+SOCKETIO_REDIS_PASSWORD = 'password'
