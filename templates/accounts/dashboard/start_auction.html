@@ -1,0 +1,122 @@
+{% extends 'dashboard.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+        {% include 'includes/alerts.html' %}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item active" href="{% url 'view_my_artwork' %}">View My Artworks
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+
+
+                {% block content-2 %}
+                    <main class="col-md-9">
+                        <h2>Start Auction for {{ artwork.artwork_title }}</h2>
+                        <article class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <img id="artwork-preview" src="{{ artwork.image.url }}" alt="Artwork Preview"
+                                             style="display: block; width: 100%;">
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% if auction.is_active %}
+                                            <div class="alert alert-warning" role="alert">
+                                                Auction has already started.
+                                            </div>
+                                            <h3>Bids</h3>
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">Bid Price</th>
+                                                    <th scope="col">Bidder</th>
+                                                    <th scope="col">Bid Time</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for bid in auction.get_bids %}
+                                                    <tr>
+                                                        <td>{{ bid.amount }}</td>
+                                                        <td>{{ bid.user }}</td>
+                                                        <td>{{ bid.bid_time }}</td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="3">No bids yet.</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <a href="{% url 'view_my_artwork' %}"
+                                               class="btn btn-danger">Back</a>
+                                        {% else %}
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label for="start-time">Start Time</label>
+                                                    <input type="datetime-local" class="form-control" id="start-time"
+                                                           name="start_time" value="{{ form.start_time.value }}"
+                                                           {% if auction.is_active %}disabled{% endif %}>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="{{ form.starting_price.id_for_label }}">Starting
+                                                        price:</label>
+                                                    {{ form.starting_price|add_class:"form-control" }}
+                                                    {% if auction.is_active %}disabled{% endif %}
+                                                    <small class="form-text text-muted">Starting price should be at
+                                                        least {{ artwork.price }}.</small>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="description">Description</label>
+                                                    <textarea class="form-control" id="description" name="description"
+                                                              {% if auction.is_active %}disabled{% endif %}>{{ form.description.value }}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    {% if auction.is_active %}
+                                                        <button type="submit" class="btn btn-primary" disabled>Start
+                                                        </button>
+                                                    {% else %}
+                                                        <button type="submit" class="btn btn-primary">Start</button>
+                                                    {% endif %}
+                                                    <a href="{% url 'view_my_artwork' %}"
+                                                       class="btn btn-danger">Back</a>
+                                                </div>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </main>
+                {% endblock content-2 %}
+
+            </div>
+        </div>
+        </div>
+
+{% endblock content %}

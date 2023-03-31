@@ -16,19 +16,19 @@
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Full Name</label>
-                                    <input type="text" name="full_name" class="form-control" required>
+                                    <input type="text" name="full_name" class="form-control" required value="{{ user.full_name }}" >
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Email</label>
-                                    <input type="email" name="email" class="form-control" required>
+                                    <input type="email" name="email" class="form-control" required value="{{ user.email }}">
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col form-group">
                                     <label for="">Phone Number</label>
-                                    <input type="text" name="phone" class="form-control" required>
+                                    <input type="text" name="phone" class="form-control" required value="{{ user.phone }}">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -76,7 +76,7 @@
                                     </td>
                                     <td>
                                         <div class="price-wrap">
-                                            <var class="price">Rs. {{ cart_item.artwork.price }}</var>
+                                            <var class="price">Rs.{{ cart_item.artwork.price }}</var>
                                         </div> <!-- price-wrap .// -->
                                     </td>
                                 </tr>

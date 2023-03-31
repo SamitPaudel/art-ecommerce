@@ -1,5 +1,7 @@
+from django.contrib.auth.decorators import login_required
+from django.core.checks import messages
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from artist.models import Artist
 from store.models import Artwork
@@ -24,5 +26,6 @@ def artist_detail(request, slug):
         'artwork_list': artwork_list
     }
     return render(request, 'artist_detail.html', context)
+
 
 

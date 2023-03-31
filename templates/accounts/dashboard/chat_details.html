@@ -1,0 +1,149 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="section-content padding-y bg">
+        {#        {% include 'includes/alerts.html' %}#}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art Portfolio</a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork</a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'view_my_artwork' %}">View My Artworks</a>
+                        {% endif %}
+                        {% if user %}
+                            <a class="list-group-item active" href="{% url 'chat_history' %}">Chat History</a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+                <div class="col-md-9">
+                    <h2>Chat History</h2>
+                    <a href="{% url 'chat_history' %}" class="btn btn-secondary mb-3">Back</a>
+                    <div id="chat-messages" data-current-user="{{ user.username }}">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.sender == user %}
+                                    <div class="card bg-primary text-white mb-3 w-50 ml-auto current-user-message">
+                                        <div class="card-body">
+                                            <p class="card-text">{{ message.content }}</p>
+                                            <small class="text-muted">{{ message.date_sent }}</small>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="card bg-light mb-3 w-50 mr-auto">
+                                        <div class="card-body">
+                                            <p class="card-text">{{ message.content }}</p>
+                                            <small class="text-muted">{{ message.sender }}
+                                                - {{ message.date_sent }}</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <div class="form-group">
+                            <label for="message">Message:</label>
+                            <input type="text" class="form-control" id="chat-message-input">
+                        </div>
+                        <input id="sendbutton" class="btn btn-primary" value="Send" type="submit">
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+    </section>
+
+    <style>
+        .container-margin {
+            margin: 30px;
+        }
+
+        .card-body-user small {
+            color: #fff;
+        }
+
+        .card-body-other small {
+            color: #555;
+        }
+
+        .card.current-user-message {
+            background-color: #007bff;
+        }
+
+        .card.current-user-message .card-body {
+            color: white;
+        }
+    </style>
+
+    {# Javascript to interact chat with the websocket backend #}
+    <script>
+        let data;
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/accounts/dashboard/chat_history/{{ room_id }}/')
+
+        chatSocket.onopen = function (event) {
+            console.log("WebSocket connected");
+        };
+
+        if (chatSocket.readyState === WebSocket.OPEN) {
+            console.log("Websocket connected")
+        } else {
+            console.error("Websocket Not connected")
+        }
+
+        chatSocket.onerror = function (event) {
+            console.error('WebSocket error:', event);
+        };
+
+        document.querySelector('#sendbutton').onclick = function (e) {
+            const message = document.querySelector('#chat-message-input').value
+            chatSocket.send(JSON.stringify({'message': message}))
+            document.querySelector('#chat-message-input').value = ''
+        }
+
+        console.log(chatSocket)
+
+        chatSocket.onmessage = function (e) {
+            const currentUser = document.querySelector('#chat-messages').dataset.currentUser;
+            const data = JSON.parse(e.data);
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('card', 'mb-3', 'w-50');
+            if (data.sender === '{{ user.username }}') {
+                messageContainer.classList.add('bg-primary', 'text-white', 'ml-auto');
+            } else {
+                messageContainer.classList.add('bg-light', 'mr-auto');
+            }
+            messageContainer.setAttribute('data-sender', data.sender);
+            messageContainer.innerHTML = `
+        <div class="card-body">
+            <p class="card-text">${data.message}</p>
+            <small class="text-muted">${new Date()}</small>
+        </div>
+    `;
+            if (data.sender === currentUser) {
+                messageContainer.classList.add('bg-primary', 'text-white', 'ml-auto');
+            } else {
+                messageContainer.classList.add('bg-light', 'mr-auto');
+            }
+            const messageList = document.querySelector('#chat-messages');
+            messageList.appendChild(messageContainer);
+        };
+
+    </script>
+
+
+{% endblock %}

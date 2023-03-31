@@ -1,29 +1,32 @@
 import datetime
 
-from django.http import HttpResponse
-from django.shortcuts import render, redirect
+import requests
+from django.shortcuts import render, redirect, get_object_or_404
+import requests
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 # Create your views here.
-from carts.models import CartItem
+
+
+from art_ecommerce import settings
+from carts.models import CartItem, Cart
 from orders.forms import OrderForm
 from orders.models import Order
 
 
-def payments(request):
-    return render(request, 'payments.html')
-
-def place_order(request ):
-    global order_total
+def place_order(request):
     current_user = request.user
-    cart_items = CartItem.objects.filter(user=current_user)
-    cart_count = cart_items.count()
-    if cart_count <= 0:
-        return redirect('store')
+    last_cart = Cart.objects.last()
+    cart_items = CartItem.objects.filter(cart=last_cart, user=current_user)
+    order_total = 0
 
     for cart_item in cart_items:
-        order_total = cart_item.artwork.price
-    discount = order_total * 0.05
-    grand_total = order_total - discount
+        order_total += int(cart_item.artwork.price)
+
+    discount = int(order_total * 0.05)
+    grand_total = int(order_total - discount)
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -54,7 +57,7 @@ def place_order(request ):
             order = Order.objects.get(user=current_user, is_ordered=False, order_number=order_number)
             context = {
                 'order': order,
-                'cart_items': cart_items,
+                'cart_items': cart_items, # Pass the cart_items variable to the template context
                 'order_total': order_total,
                 'discount': discount,
                 'grand_total': grand_total

@@ -1,0 +1,57 @@
+{% extends 'dashboard.html' %}
+{% load widget_tweaks %}
+{% block content %}
+    <section class="section-content padding-y bg">
+
+        {% include 'includes/alerts.html' %}
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-3">
+                    <!--   SIDEBAR   -->
+                    <ul class="list-group">
+                        <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
+                        {% if not user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'view_my_artwork' %}">View My Artworks
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item active" href="#">Chat History</a>
+                        {% endif %}
+                    </ul>
+                    <br>
+                    <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
+                            class="text">Log out</span> </a>
+                    <!--   SIDEBAR .//END   -->
+                </aside>
+
+                {% block content-2 %}
+                    <main class="col-md-9">
+                        <h2>Chat History</h2>
+                        <article class="card">
+                            <div class="card-body">
+                                {% if chatrooms %}
+                                    <ul>
+                                        {% for chatroom in chatrooms %}
+                                            <li><a href="{% url 'chat_detail' chatroom.id %}">{{ chatroom }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>You don't have any chatrooms yet.</p>
+                                {% endif %}
+
+                            </div>
+                        </article>
+                    </main>
+                {% endblock %}
+    </section>
+
+{% endblock %}

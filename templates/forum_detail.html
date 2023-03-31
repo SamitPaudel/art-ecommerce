@@ -29,12 +29,12 @@
                     </div>
                     
                     <!-- Comment input -->
-                    <form action="." method="post">
+                    <form action="." method="post" name="comment-form">
                         {% csrf_token %}
-                        <div class="comment-area" hidden id="comment{{comment.id}}">
+                        <div class="comment-area" id="comment{{comment.id}}">
                             <textarea name="reply" id="" placeholder="reply here ... "></textarea>
                             <input class="btn btn-primary" type="submit" value="Submit" name="reply-form">
-                            <input type="hidden" name="comment-id" value="{{comment.id}}">
+                            <input type="hidden" name="comment-id" value="comment{{comment.id}}">
                         </div>
                     </form>
 
@@ -102,7 +102,7 @@
                     {{ reply.content }}
 
                     <div class="comment">
-                      <button class="btn btn-primary align-right" id="reply-btn" onclick="showReply()">Reply</button>
+                      <button class="btn btn-primary align-right" id="reply-btn" onclick=onclick="showReplies('comment{{comment.id}}')">Reply</button>
                     </div>
 
                     <!-- Comment input -->
@@ -133,6 +133,6 @@
             </ul>
             
         
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+{#    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>#}
     <script src="{% static 'js/main.js' %}"></script>
 {% endblock %}

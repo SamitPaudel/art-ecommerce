@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
@@ -9,12 +10,14 @@ from store.models import Artwork
 
 # to get session key, generate if not available
 global cart_item
+User = get_user_model()
 def _cart_id(request):
     cart = request.session.session_key
     if not cart:
         cart = request.session.create()
     return cart
 
+@login_required
 def add_cart(request, artwork_id):
     artwork = Artwork.objects.get(id=artwork_id)
     try:
@@ -32,14 +35,14 @@ def add_cart(request, artwork_id):
         cart_item.save()
     except CartItem.DoesNotExist:
         cart_item = CartItem.objects.create(
+            user=request.user,
             artwork = artwork,
             cart = cart,
-            # no need is_active as it is True by default
         )
         cart_item.save()
     return redirect('cart')
 
-
+@login_required
 def remove_cart(request, artwork_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     artwork = get_object_or_404(Artwork, id=artwork_id)
@@ -58,9 +61,9 @@ def cart(request, total=0, cart_item=None):
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
         for cart_item in cart_items:
-            total += (cart_item.artwork.price)
-        discount = total * 0.05
-        grand_total = total - discount
+            total += int(cart_item.artwork.price)
+        discount = int(total * 0.05)
+        grand_total = int(total - discount)
     except ObjectDoesNotExist:
         pass
 
@@ -75,6 +78,7 @@ def cart(request, total=0, cart_item=None):
 
 @login_required(login_url='login')
 def checkout(request, total=0, cart_item=None):
+    user = request.user
     try:
         total = 0
         cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -90,6 +94,25 @@ def checkout(request, total=0, cart_item=None):
         'total': total,
         'cart_items': cart_items,
         'discount': discount,
-        'grand_total': grand_total
+        'grand_total': grand_total,
+        'user': user,
     }
     return render(request, 'checkout.html', context)
+
+
+def finalize_checkout(request):
+    if request.method == 'POST':
+        cart = Cart.objects.latest('date_added')
+        print(f"Cart: {cart}")
+        # Get the items in the cart
+        cart_items = cart.cartitem_set.all()
+        if cart_items:
+            print("If block entered")
+            for item in cart_items:
+                artwork = Artwork.objects.get(id=item.artwork_id)
+                print(artwork.artwork_title)
+                artwork.isAvailable = False
+                artwork.save()
+                item.delete()
+            request.session['cart_items'] = []
+        return redirect('home')

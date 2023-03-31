@@ -10,7 +10,20 @@
                     <ul class="list-group">
                         <a class="list-group-item active" href="{% url 'update_profile' %}">Edit Profile</a>
                         {% if not user.is_verified_artist %}
-                            <a class="list-group-item" href="{% url 'dashboard' %}">Submit Art Portfolio</a>
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'view_my_artwork' %}">View My Artworks
+                            </a>
+                        {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
                         {% endif %}
                     </ul>
                     <br>
@@ -21,14 +34,11 @@
 
                 {% block content-2 %}
                     <main class="col-md-9">
+                        <h2>Edit Profile</h2>
                         <article class="card">
-                            <header class="card-header">
-                                <h3 style="text-align:center; margin-block:50px;">Hey {{ user }}, Edit Your Profile</h3>
-                            </header>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-8">
-
                                         <form action="{% url 'update_profile' %}" method="POST">
                                             {% csrf_token %}
                                             <div class="form-group">

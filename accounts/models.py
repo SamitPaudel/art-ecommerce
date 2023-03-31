@@ -68,7 +68,15 @@ class Account(AbstractBaseUser):
         return True
 
 
+class ArtPortfolio(models.Model):
+    artist = models.ForeignKey(Account, on_delete=models.CASCADE)
+    image1 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)
+    image2 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)
+    image3 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)
+    image4 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)
+    image5 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    isApproved = models.BooleanField(default=False)
 
     def __str__(self):
         return (str(self.artist) + ' portfolio')
-

@@ -13,6 +13,9 @@ class Cart(models.Model):
     def __str__(self):
         return self.cart_id
 
+    def clear_cart(self):
+        self.cartitem_set.all().delete()
+
 
 class CartItem(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)
@@ -20,8 +23,8 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
 
-
     def __str__(self):
-        return self.artwork
+        return f"{self.user.full_name} - {self.artwork.artwork_title}"
+
 
 
