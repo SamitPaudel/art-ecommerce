@@ -141,28 +141,21 @@
                         </div> <!-- col.// -->
                     </div> <!-- row.// -->
                 </div>
-                {# Chat #}
-                <div class="container mt-4">
-                    <div class="card">
-                        <div class="card-header">
-                            Chat Room
-                        </div>
-                        <div class="card-body">
-                            <div class="container" id="messagescontainer" style="overflow-y: auto">
-                                <div id="lefttext">Hello!</div>
-                                <br>
-                                <div id="lefttext">Hi</div>
-                                <br>
-                            </div>
-                            <div>
-                                <input id="messageinputfield" class="form-control" type="text">
-                                <br><br>
-                                <input id="sendbutton" class="btn btn-primary" type="submit" value="Send">
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
+                {#  Chat  #}
+                <div class="card-body">
+                    {% if request.user.is_authenticated %}
+                        {% if chat_room %}
+                            <a href="{% url 'chat_detail' chat_room.pk %}" class="btn btn-primary">Go to chat</a>
+                        {% else %}
+                            <form method="post"
+                                  action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Start chat</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
     </section>
     {# Comment Section #}
     <!-- ========================= SECTION CONTENT END// ========================= -->
@@ -176,13 +169,8 @@
     <script>
         function countdown_timer(end_time) {
             const countdown = setInterval(() => {
-                {#console.log(end_time)#}
-                {#const end_time_local = new Date(end_time).toLocaleString('en-US', {timeZone: 'Asia/Katmandu'});#}
-                {#console.log(end_time_local)#}
                 const now = new Date().getTime();
-                {#console.log(now)#}
                 const distance = new Date(end_time) - now;
-                {#console.log('Difference:' + distance)#}
                 const seconds = Math.floor(distance / 1000);
 
                 if (distance <= 0) {
@@ -202,6 +190,7 @@
 
         countdown_timer('{{ auction.end_time.isoformat }}');
     </script>
+
     <style>
         #lefttext {
             display: inline-block;
@@ -214,61 +203,5 @@
             background-color: #0079ef;
         }
     </style>
-
-
-    {# Javascript to interact chat with the websocket backend #}
-    <script type="text/javascript">
-        // Get the current URL
-        const currentUrl = window.location.href;
-
-        // Extract the genre slug from the URL using a regular expression
-        const match = currentUrl.match(/\/(\w+)\/([\w-]+)\/$/);
-        const genreSlug = match[1];
-        const artworkSlug = match[2];
-
-        // Construct the WebSocket URL using the extracted slugs
-        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/' + genreSlug + '/' + artworkSlug + '/');
-
-        // instructions to send the message
-        document.querySelector('#sendbutton').onclick = function (e) {
-            const message = document.querySelector('#messageinputfield').value
-            if (chatSocket.readyState === WebSocket.OPEN) {
-                chatSocket.send(JSON.stringify({'message': message}))
-                document.querySelector('#messageinputfield').value = ''
-                console.log('Message Sent')
-            } else {
-                console.error('WebSocket is not open')
-            }
-        }
-
-        // instructions to recieve the message
-        chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data)
-            console.log(data)
-            document.querySelector('#messagescontainer').innerHTML += '<div id="lefttext">' + data.message + '</div>' + '<br>'
-            scrollToBottom()
-        }
-
-        chatSocket.onclose = function (e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#messageinputfield').onkeyup = function (e) {
-            if (e.keyCode === 13) {
-                document.querySelector('#sendbutton').click()
-                console.log('Enter')
-            }
-
-        }
-
-        function scrollToBottom() {
-            document.querySelector('#messagecontainer').scrollTo({
-                top: document.querySelector('#messagecontainer').scrollHeight,
-                behaviour: 'smooth'
-            })
-        }
-
-    </script>
-
 {% endblock %}
 

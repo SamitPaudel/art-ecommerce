@@ -1,7 +1,6 @@
-{% extends 'base.html' %}
-
+{% extends 'dashboard.html' %}
+{% load widget_tweaks %}
 {% block content %}
-    <!-- ========================= SECTION CONTENT ========================= -->
     <section class="section-content padding-y bg">
 
         {% include 'includes/alerts.html' %}
@@ -12,7 +11,9 @@
                     <ul class="list-group">
                         <a class="list-group-item" href="{% url 'update_profile' %}">Edit Profile</a>
                         {% if not user.is_verified_artist %}
-                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art Portfolio</a>
+                            <a class="list-group-item" href="{% url 'submit_portfolio' %}">Submit Art
+                                Portfolio
+                            </a>
                         {% endif %}
                         {% if user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'upload_artwork' %}">Upload Artwork
@@ -23,7 +24,7 @@
                             </a>
                         {% endif %}
                         {% if user.is_verified_artist %}
-                            <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
+                            <a class="list-group-item active" href="#">Chat History</a>
                         {% endif %}
                     </ul>
                     <br>
@@ -33,17 +34,24 @@
                 </aside>
 
                 {% block content-2 %}
+                    <main class="col-md-9">
+                        <h2>Chat History</h2>
+                        <article class="card">
+                            <div class="card-body">
+                                {% if chatrooms %}
+                                    <ul>
+                                        {% for chatroom in chatrooms %}
+                                            <li><a href="{% url 'chat_detail' chatroom.id %}">{{ chatroom }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>You don't have any chatrooms yet.</p>
+                                {% endif %}
 
-                {% endblock content-2 %}
-                </main>
-            </div>
-        </div>
+                            </div>
+                        </article>
+                    </main>
+                {% endblock %}
     </section>
-    <!-- row.// -->
-    </div>
-
-
-    </section>
-    <!-- ========================= SECTION CONTENT END// ========================= -->
 
 {% endblock %}

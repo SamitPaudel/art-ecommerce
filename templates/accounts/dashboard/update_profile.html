@@ -22,6 +22,9 @@
                             <a class="list-group-item" href="{% url 'view_my_artwork' %}">View My Artworks
                             </a>
                         {% endif %}
+                        {% if user.is_verified_artist %}
+                            <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span

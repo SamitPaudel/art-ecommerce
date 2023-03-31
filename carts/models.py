@@ -13,6 +13,9 @@ class Cart(models.Model):
     def __str__(self):
         return self.cart_id
 
+    def clear_cart(self):
+        self.cartitem_set.all().delete()
+
 
 class CartItem(models.Model):
     user = models.ForeignKey(Account, on_delete=models.CASCADE, null=True)

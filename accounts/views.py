@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -17,6 +18,7 @@ from artist.forms import ArtworkForm
 from artist.models import Artist
 from carts.models import Cart, CartItem
 from carts.views import _cart_id
+from chat.models import ChatRoom
 from store.forms import AuctionForm
 from store.models import Artwork, Auction
 
@@ -255,3 +257,16 @@ def start_auction(request, artwork_id):
         else:
             form = AuctionForm(initial={'starting_price': artwork.price})
         return render(request, 'accounts/dashboard/start_auction.html', {'form': form, 'artwork': artwork})
+
+
+def chat_history(request):
+    chatrooms = ChatRoom.objects.filter(Q(user=request.user) | Q(artist=request.user.artist))
+    context = {'chatrooms': chatrooms}
+    return render(request, 'accounts/dashboard/chat_history.html', context)
+
+
+def chat_detail(request, room_id):
+    chatroom = get_object_or_404(ChatRoom, pk=room_id)
+    messages = chatroom.messages.order_by('date_sent')
+    context = {'chatroom': chatroom, 'messages': messages, 'room_id':room_id, 'current_user_id': request.user.id}
+    return render(request, 'accounts/dashboard/chat_details.html', context)

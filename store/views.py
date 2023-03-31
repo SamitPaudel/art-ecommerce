@@ -14,6 +14,7 @@ from django.urls import reverse
 
 from carts.models import CartItem
 from carts.views import _cart_id
+from chat.models import ChatRoom, ChatMessage
 from genre.models import Genre
 from medium.models import Medium
 from store.forms import AuctionForm, BidForm
@@ -82,33 +83,50 @@ def artwork_detail(request, genres_slug, artwork_slug):
         user_liked_artwork = UserLikedArtwork.objects.filter(user=user, artwork=single_artwork).exists()
         auction = Auction.objects.filter(artwork=single_artwork, is_active=True).first()
 
+        # Check if chat room already exists
+        chat_room = ChatRoom.objects.filter(user=request.user, artist=single_artwork.artist_name,
+                                            artwork=single_artwork).first()
+
+        if chat_room:
+            # Chat room already exists, retrieve messages
+            chat_messages = chat_room.get_messages()
+        else:
+            # Chat room does not exist, create a new one
+            chat_room = ChatRoom.objects.create(user=request.user, artist=single_artwork.artist_name,
+                                                artwork=single_artwork)
+
+            # Redirect to chat room view
+            return redirect('chat_detail', chat_room_id=chat_room.id)
+
+        # Process chat message form
         if request.method == 'POST' and request.user.is_authenticated:
-            if user_liked_artwork:
-                # user has already liked this artwork, so remove the like
-                user_liked_artwork = UserLikedArtwork.objects.get(user=user, artwork=single_artwork)
-                user_liked_artwork.delete()
+            content = request.POST.get('content')
+            if content:
+                chat_message = ChatMessage(sender=request.user, room=chat_room, content=content)
+                chat_message.save()
+
+                # Redirect back to artwork detail page
+                return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
+
+        context = {
+            'single_artwork': single_artwork,
+            'in_cart': in_cart,
+            'artwork_comments': artwork_comments,
+            'user_liked_artwork': user_liked_artwork,
+            'auction': auction,
+            'chat_messages': chat_messages,
+            'chat_room': chat_room,
+        }
+
+        if auction:
+            highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
+            if highest_bid is not None:
+                context['highest_bid'] = highest_bid
             else:
-                # user has not liked this artwork yet, so add the like
-                user_liked_artwork = UserLikedArtwork(user=user, artwork=single_artwork)
-                user_liked_artwork.save()
+                context['highest_bid'] = auction.starting_price
 
     except Artwork.DoesNotExist:
         raise Http404("Artwork does not exist")
-
-    context = {
-        'single_artwork': single_artwork,
-        'in_cart': in_cart,
-        'artwork_comments': artwork_comments,
-        'user_liked_artwork': user_liked_artwork,
-        'auction': auction,
-    }
-
-    if auction:
-        highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
-        if highest_bid is not None:
-            context['highest_bid'] = highest_bid
-        else:
-            context['highest_bid'] = auction.starting_price
 
     return render(request, 'artwork_detail.html', context)
 
@@ -116,6 +134,11 @@ def artwork_detail(request, genres_slug, artwork_slug):
 def search(request):
     artworks = None
     artworks_count = None
+
+    # Check if price filter was applied
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         if keyword:
@@ -125,6 +148,16 @@ def search(request):
                 # | Q(artist_name__contains=keyword)
             )
             artworks_count = artworks.count()
+
+    elif min_price is not None and max_price is not None:
+        print("entering if block")
+        # filter artworks based on price range
+        artworks = Artwork.objects.filter(price__range=(min_price, max_price))
+        print(artworks)
+    else:
+        print("entering else block")
+        artworks = Artwork.objects.all()
+        artworks_count = artworks.count()
 
     context = {
         'artworks': artworks,
@@ -149,6 +182,7 @@ def toggle_like_artwork(request, artwork_id):
     }
 
     return JsonResponse(context)
+
 
 @login_required
 def place_bid(request, genres_slug, artwork_slug):
@@ -189,5 +223,3 @@ def place_bid(request, genres_slug, artwork_slug):
     }
 
     return render(request, 'place_bid.html', context)
-
-

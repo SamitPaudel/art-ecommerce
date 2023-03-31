@@ -11,22 +11,22 @@ from django.views.decorators.http import require_POST
 
 
 from art_ecommerce import settings
-from carts.models import CartItem
+from carts.models import CartItem, Cart
 from orders.forms import OrderForm
 from orders.models import Order
 
 
 def place_order(request):
     current_user = request.user
-    cart_items = CartItem.objects.filter(user=current_user)
-    cart_count = cart_items.count()
+    last_cart = Cart.objects.last()
+    cart_items = CartItem.objects.filter(cart=last_cart, user=current_user)
     order_total = 0
 
     for cart_item in cart_items:
-        order_total += cart_item.artwork.price
+        order_total += int(cart_item.artwork.price)
 
-    discount = order_total * 0.05
-    grand_total = order_total - discount
+    discount = int(order_total * 0.05)
+    grand_total = int(order_total - discount)
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
