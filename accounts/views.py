@@ -261,6 +261,8 @@ def start_auction(request, artwork_id):
 
 def chat_history(request):
     chatrooms = ChatRoom.objects.filter(Q(user=request.user) | Q(artist=request.user.artist))
+    for chatroom in chatrooms:
+        chatroom.last_message = chatroom.get_last_message()
     context = {'chatrooms': chatrooms}
     return render(request, 'accounts/dashboard/chat_history.html', context)
 

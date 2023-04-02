@@ -116,12 +116,18 @@ def artwork_detail(request, genres_slug, artwork_slug):
 
     user_liked_artwork = UserLikedArtwork.objects.filter(user=request.user, artwork=single_artwork).first()
 
-    if request.method == 'POST' and user_liked_artwork:
-        # User clicked "Remove from Favorites" button
-        user_liked_artwork.delete()
-        messages.success(request, f"{single_artwork.title} has been removed from your favorites.")
-        return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
-
+    if request.method == 'POST' and 'action' in request.POST:
+        action = request.POST.get('action')
+        if action == 'like' and not user_liked_artwork:
+            # User clicked "Add to Favorites" button
+            UserLikedArtwork.objects.create(user=request.user, artwork=single_artwork)
+            messages.success(request, f"{single_artwork.artwork_title} has been added to your favorites.")
+            return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
+        elif action == 'unlike' and user_liked_artwork:
+            # User clicked "Remove from Favorites" button
+            user_liked_artwork.delete()
+            messages.success(request, f"{single_artwork.artwork_title} has been removed from your favorites.")
+            return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
     context = {
         'single_artwork': single_artwork,
         'in_cart': in_cart,

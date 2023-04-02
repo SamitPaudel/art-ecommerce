@@ -24,6 +24,9 @@ class ChatRoom(models.Model):
     def get_messages(self):
         return self.messages.order_by('-date_sent')
 
+    def get_last_message(self):
+        return self.messages.order_by('-date_sent').first()
+
 
 class ChatMessage(models.Model):
     """

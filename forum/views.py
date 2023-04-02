@@ -21,19 +21,20 @@ def detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
     author = Account.objects.get(username=request.user.username)
 
-    if "comment-form" in request.POST:
-        comment = request.POST.get("comment")
-        new_comment, created = Comment.objects.get_or_create(user=author, content=comment)
-        post.comments.add(new_comment.id)
+    if request.method == 'POST':
+        print(request.POST)  # check if the form data is being submitted correctly
+        if "comment-form" in request.POST:
+            comment = request.POST.get("comment")
+            new_comment, created = Comment.objects.get_or_create(user=author, content=comment)
+            post.comments.add(new_comment.id)
 
-    if "reply-form" in request.POST:
-        reply = request.POST.get("reply")
-        commenr_id = request.POST.get("comment-id")
-        comment_obj = Comment.objects.get(id=commenr_id)
-        new_reply, created = Reply.objects.get_or_create(user=author, content=reply)
-        comment_obj.replies.add(new_reply.id)
-        return redirect("forum_detail", slug=post.slug)
-
+        if "reply-form" in request.POST:
+            reply = request.POST.get("reply")
+            comment_id = request.POST.get("comment-id")
+            comment_obj = Comment.objects.get(id=comment_id)
+            new_reply, created = Reply.objects.get_or_create(user=author, content=reply)
+            comment_obj.replies.add(new_reply.id)
+            return redirect("forum_detail", slug=post.slug)
     context = {
         "post": post
     }
