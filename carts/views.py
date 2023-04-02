@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -40,7 +41,8 @@ def add_cart(request, artwork_id):
             cart = cart,
         )
         cart_item.save()
-    return redirect('cart')
+    messages.success(request, f"{artwork.artwork_title} added to cart!")
+    return redirect('home')
 
 @login_required
 def remove_cart(request, artwork_id):

@@ -74,59 +74,70 @@ def store_medium(request, mediums_slug=None):
     return render(request, 'home.html', context)
 
 
+@login_required
 def artwork_detail(request, genres_slug, artwork_slug):
-    try:
-        single_artwork = Artwork.objects.get(genre__slug=genres_slug, slug=artwork_slug)
-        in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), artwork=single_artwork).exists()
-        artwork_comments = ArtworkComment.objects.filter(artwork=single_artwork)
-        user = request.user
-        user_liked_artwork = UserLikedArtwork.objects.filter(user=user, artwork=single_artwork).exists()
-        auction = Auction.objects.filter(artwork=single_artwork, is_active=True).first()
+    single_artwork = get_object_or_404(Artwork, genre__slug=genres_slug, slug=artwork_slug)
+    in_cart = CartItem.objects.filter(cart__cart_id=_cart_id(request), artwork=single_artwork).exists()
+    artwork_comments = ArtworkComment.objects.filter(artwork=single_artwork)
+    auction = Auction.objects.filter(artwork=single_artwork, is_active=True).first()
 
-        # Check if chat room already exists
-        chat_room = ChatRoom.objects.filter(user=request.user, artist=single_artwork.artist_name,
-                                            artwork=single_artwork).first()
+    # Check if chat room already exists
+    chat_room = ChatRoom.objects.filter(user=request.user, artist=single_artwork.artist_name,
+                                        artwork=single_artwork).first()
 
-        if chat_room:
-            # Chat room already exists, retrieve messages
-            chat_messages = chat_room.get_messages()
+    if chat_room:
+        # Chat room already exists, retrieve messages
+        chat_messages = chat_room.get_messages()
+    else:
+        # Chat room does not exist, create a new one
+        chat_room = ChatRoom.objects.create(user=request.user, artist=single_artwork.artist_name,
+                                            artwork=single_artwork)
+
+        # Redirect to chat room view
+        return redirect('chat_detail', chat_room_id=chat_room.id)
+
+    # Process chat message form
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            chat_message = ChatMessage(sender=request.user, room=chat_room, content=content)
+            chat_message.save()
+
+            # Redirect back to artwork detail page
+            return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
+
+    if request.method == 'POST':
+        content = request.POST.get('comment_content')
+        if content:
+            comment = ArtworkComment(user=request.user, artwork=single_artwork, content=content)
+            comment.save()
+            messages.success(request, 'Your comment has been posted successfully.')
+            return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
+
+    user_liked_artwork = UserLikedArtwork.objects.filter(user=request.user, artwork=single_artwork).first()
+
+    if request.method == 'POST' and user_liked_artwork:
+        # User clicked "Remove from Favorites" button
+        user_liked_artwork.delete()
+        messages.success(request, f"{single_artwork.title} has been removed from your favorites.")
+        return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
+
+    context = {
+        'single_artwork': single_artwork,
+        'in_cart': in_cart,
+        'artwork_comments': artwork_comments,
+        'user_liked_artwork': user_liked_artwork,
+        'auction': auction,
+        'chat_messages': chat_messages,
+        'chat_room': chat_room,
+    }
+
+    if auction:
+        highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
+        if highest_bid is not None:
+            context['highest_bid'] = highest_bid
         else:
-            # Chat room does not exist, create a new one
-            chat_room = ChatRoom.objects.create(user=request.user, artist=single_artwork.artist_name,
-                                                artwork=single_artwork)
-
-            # Redirect to chat room view
-            return redirect('chat_detail', chat_room_id=chat_room.id)
-
-        # Process chat message form
-        if request.method == 'POST' and request.user.is_authenticated:
-            content = request.POST.get('content')
-            if content:
-                chat_message = ChatMessage(sender=request.user, room=chat_room, content=content)
-                chat_message.save()
-
-                # Redirect back to artwork detail page
-                return redirect('artwork_detail', genres_slug=genres_slug, artwork_slug=artwork_slug)
-
-        context = {
-            'single_artwork': single_artwork,
-            'in_cart': in_cart,
-            'artwork_comments': artwork_comments,
-            'user_liked_artwork': user_liked_artwork,
-            'auction': auction,
-            'chat_messages': chat_messages,
-            'chat_room': chat_room,
-        }
-
-        if auction:
-            highest_bid = Bid.objects.filter(auction=auction).aggregate(Max('amount'))['amount__max']
-            if highest_bid is not None:
-                context['highest_bid'] = highest_bid
-            else:
-                context['highest_bid'] = auction.starting_price
-
-    except Artwork.DoesNotExist:
-        raise Http404("Artwork does not exist")
+            context['highest_bid'] = auction.starting_price
 
     return render(request, 'artwork_detail.html', context)
 

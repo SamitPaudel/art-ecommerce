@@ -79,19 +79,19 @@
                                       action="{% url 'artwork_detail' genres_slug=single_artwork.genre.slug artwork_slug=single_artwork.slug %}">
                                     {% csrf_token %}
                                     {% if user_liked_artwork %}
-                                        <input type="hidden" name="action" value="unlike">
-                                        <button type="submit" class="btn btn-danger">
+                                        <br>
+                                        <button type="submit" name="action" value="unlike" class="btn btn-danger">
                                             <i class="bi bi-heart"></i> Remove from Favorites
                                         </button>
                                     {% else %}
-                                        <input type="hidden" name="action" value="like">
-                                        <button type="submit" class="btn btn-primary">
+                                        <br>
+                                        <button type="submit" name="action" value="like" class="btn btn-primary">
                                             <i class="bi bi-heartbreak"></i> Add to Favorites
                                         </button>
                                     {% endif %}
                                 </form>
                             {% else %}
-                                <p>You need to be logged in to add to Favorites
+                                <p>You need to be logged in to add to Favorites</p>
                             {% endif %}
 
                             <br>
