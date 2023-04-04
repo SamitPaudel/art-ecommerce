@@ -26,6 +26,12 @@
                         {% if user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
                         {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'portfolio_list' %}">Portfolio List</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'artwork_list' %}">Artwork For Approval</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span

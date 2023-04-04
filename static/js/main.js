@@ -1,5 +1,5 @@
-function showComment(){
-    var commentArea = document.getElementById('comment-area');
+function showComment(commentId) {
+    var commentArea = document.querySelector('.comment-area');
     var cmtButton = document.getElementById('comment-btn')
     console.log(commentArea);
     console.log(cmtButton)
@@ -7,12 +7,24 @@ function showComment(){
         cmtButton.innerHTML = 'Hide'
         commentArea.removeAttribute("hidden");
     } else {
-          cmtButton.innerHTML = 'Comment'
+        cmtButton.innerHTML = 'Comment'
         commentArea.setAttribute("hidden", "");
-      }
-    var commentArea = document.getElementById("comment-area");
+    }
     commentArea.classList.remove("hide");
 }
+
+function toggleComment(commentId) {
+    var commentArea = document.getElementById(commentId);
+    var button = document.getElementById('comment-btn');
+    if (commentArea.style.display === 'none') {
+        commentArea.style.display = 'block';
+        button.innerHTML = 'Hide';
+    } else {
+        commentArea.style.display = 'none';
+        button.innerHTML = 'Comment';
+    }
+}
+
 //Reply
 function showReply() {
     var commentArea = document.getElementById('reply-area');

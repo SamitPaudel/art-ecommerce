@@ -242,7 +242,8 @@ def start_auction(request, artwork_id):
     if auction:
         if auction.is_active:
             bids = auction.bids.all().order_by('-amount')
-            return render(request, 'accounts/dashboard/start_auction.html', {'bids': bids, 'artwork': artwork, 'auction': auction})
+            return render(request, 'accounts/dashboard/start_auction.html',
+                          {'bids': bids, 'artwork': artwork, 'auction': auction})
         else:
             messages.error(request, 'Auction has already ended for this artwork')
             return redirect('dashboard')
@@ -270,5 +271,41 @@ def chat_history(request):
 def chat_detail(request, room_id):
     chatroom = get_object_or_404(ChatRoom, pk=room_id)
     messages = chatroom.messages.order_by('date_sent')
-    context = {'chatroom': chatroom, 'messages': messages, 'room_id':room_id, 'current_user_id': request.user.id}
+    context = {'chatroom': chatroom, 'messages': messages, 'room_id': room_id, 'current_user_id': request.user.id}
     return render(request, 'accounts/dashboard/chat_details.html', context)
+
+
+@login_required
+def portfolio_list(request):
+    portfolios = ArtPortfolio.objects.filter(isApproved=False)
+    return render(request, 'accounts/dashboard/portfolio_list.html', {'portfolios': portfolios})
+
+
+def view_portfolio(request, pk):
+    portfolio = get_object_or_404(ArtPortfolio, pk=pk)
+    if request.method == 'POST':
+        if 'confirm' in request.POST:
+            portfolio.isApproved = True
+            portfolio.save()
+        elif 'reject' in request.POST:
+            portfolio.delete()
+            return redirect('portfolio_list')
+    return render(request, 'accounts/dashboard/view_portfolio.html', {'portfolio': portfolio})
+
+
+def approve_artwork_list(request):
+    artworks = Artwork.objects.filter(isApproved=False)
+    return render(request, 'accounts/dashboard/approve_artwork_list.html', {'artworks': artworks})
+
+
+def artwork_approval_detail(request, pk):
+    artwork = get_object_or_404(Artwork, pk=pk)
+    if request.method == 'POST':
+        if 'approve' in request.POST:
+            artwork.isApproved = True
+            artwork.save()
+            return redirect('artwork_list')
+        elif 'cancel' in request.POST:
+            artwork.delete()
+            return redirect('artwork_list')
+    return render(request, 'accounts/dashboard/artwork_approval_detail.html', {'artwork': artwork})

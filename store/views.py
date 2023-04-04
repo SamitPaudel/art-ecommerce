@@ -12,6 +12,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 # Create your views here.
 from django.urls import reverse
 
+from accounts.models import ArtPortfolio
 from carts.models import CartItem
 from carts.views import _cart_id
 from chat.models import ChatRoom, ChatMessage
