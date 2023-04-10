@@ -56,13 +56,13 @@ def store_medium(request, mediums_slug=None):
     if mediums_slug is not None:
         mediums = get_object_or_404(Medium, slug=mediums_slug)
         artworks = Artwork.objects.filter(medium_title=mediums, is_verified=True)
-        paginator = Paginator(artworks, 1)
+        paginator = Paginator(artworks, 9)
         page = request.GET.get('page')
         paged_artworks = paginator.get_page(page)
         artworks_count = artworks.count()
     else:
         artworks = Artwork.objects.all().order_by('artwork_title')
-        paginator = Paginator(artworks, 1)
+        paginator = Paginator(artworks, 9)
         page = request.GET.get('page')
         paged_artworks = paginator.get_page(page)
         artworks_count = artworks.count()
@@ -162,8 +162,7 @@ def search(request):
         if keyword:
             artworks = Artwork.objects.filter(
                 Q(artwork_title__icontains=keyword) |
-                Q(description__icontains=keyword)
-                # | Q(artist_name__contains=keyword)
+                Q(description__icontains=keyword)| Q(artist_name__artist_name__icontains=keyword)
             )
             artworks_count = artworks.count()
 
@@ -178,9 +177,7 @@ def search(request):
         artworks_count = artworks.count()
 
     context = {
-        'artworks': artworks,
-        'artwork_count': artworks_count,
-    }
+        'artworks': artworks, 'artwork_count': artworks_count,}
     return render(request, 'home.html', context)
 
 

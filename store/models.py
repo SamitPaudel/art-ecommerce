@@ -35,6 +35,7 @@ class Artwork(models.Model):
     image = models.ImageField(upload_to='photos/artworks', blank=False)
     isAvailable = models.BooleanField(default=False)
     isApproved = models.BooleanField(default=False)
+    buyer = models.ForeignKey(Account, on_delete=models.SET_NULL, blank=True, null=True)
 
     def get_url(self):
         return reverse('artwork_detail', args=[self.genre.slug, self.slug])
@@ -123,6 +124,7 @@ class Auction(models.Model):
         if timezone.now() >= self.end_time:
             highest_bid = self.get_bids().first()
             if highest_bid:
+                self.artwork.buyer = highest_bid.user
                 self.artwork.isAvailable = False
                 self.is_active = False
                 self.bid = highest_bid

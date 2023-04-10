@@ -114,6 +114,7 @@ def finalize_checkout(request):
                 artwork = Artwork.objects.get(id=item.artwork_id)
                 print(artwork.artwork_title)
                 artwork.isAvailable = False
+                artwork.buyer = request.user
                 artwork.save()
                 item.delete()
             request.session['cart_items'] = []

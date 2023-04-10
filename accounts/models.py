@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django_resized import ResizedImageField
 
+
 class MyAccountManager(BaseUserManager):
     def create_user(self, full_name, username, email, phone_number, password):
         if not email:
@@ -17,7 +18,6 @@ class MyAccountManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
 
     def create_superuser(self, email, username, password, full_name, phone_number):
         user = self.create_user(
@@ -41,7 +41,8 @@ class Account(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length=50)
     password = models.CharField(max_length=100)
-    profileImage = ResizedImageField(size=[100, 180],quality=100, upload_to='profile_pic', default=None, blank=True, null=True)
+    profileImage = ResizedImageField(size=[100, 180], quality=100, upload_to='profile_pic', default=None, blank=True,
+                                     null=True)
     # add another fields here if required
 
     # required

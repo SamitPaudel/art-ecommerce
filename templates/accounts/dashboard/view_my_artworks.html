@@ -40,10 +40,10 @@
                 </aside>
 
                 {% block content-2 %}
-                    <div class="row">
+{#                    <div class="row">#}
                         {% if artworks %}
                             {% for artwork in artworks %}
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <figure class="card card-product-grid">
                                         <div class="img-wrap">
                                             <a href="{{ artwork.get_url }}"><img src="{{ artwork.image.url }}"></a>
@@ -77,7 +77,7 @@
                                 <h6 class="text-center">Nothing found. Try again with another search term.</h6>
                             </div>
                         {% endif %}
-                    </div> <!-- row end.// -->
+{#                    </div> <!-- row end.// -->#}
                 {% endblock %}
             </div>
         </div>

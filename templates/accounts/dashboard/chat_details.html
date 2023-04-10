@@ -101,27 +101,12 @@
         let data;
         const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/accounts/dashboard/chat_history/{{ room_id }}/')
 
-        chatSocket.onopen = function (event) {
-            console.log("WebSocket connected");
-        };
-
-        if (chatSocket.readyState === WebSocket.OPEN) {
-            console.log("Websocket connected")
-        } else {
-            console.error("Websocket Not connected")
-        }
-
-        chatSocket.onerror = function (event) {
-            console.error('WebSocket error:', event);
-        };
 
         document.querySelector('#sendbutton').onclick = function (e) {
             const message = document.querySelector('#chat-message-input').value
             chatSocket.send(JSON.stringify({'message': message}))
             document.querySelector('#chat-message-input').value = ''
         }
-
-        console.log(chatSocket)
 
         chatSocket.onmessage = function (e) {
             const currentUser = document.querySelector('#chat-messages').dataset.currentUser;
