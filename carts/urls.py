@@ -9,5 +9,4 @@ urlpatterns = [
     path('remove_cart/<int:artwork_id>/', views.remove_cart, name='remove_cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('finalize_checkout/', finalize_checkout, name='finalize_checkout'),
-    # path('initiate-payment/<slug:order_number>/', initiate_payment, name='initiate_payment'),
 ]

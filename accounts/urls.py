@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('dashboard/update_profile/', views.update_profile, name='update_profile'),
+    path('dashboard/add_artwork_admin/', views.upload_artwork_admin, name='add_artwork_admin'),
     path('dashboard/chat_history/', views.chat_history, name='chat_history'),
     path('dashboard/chat_history/<int:room_id>/', views.chat_detail, name='chat_detail'),
     path('dashboard/submit_portfolio/', views.submit_portfolio, name='submit_portfolio'),
@@ -20,4 +21,9 @@ urlpatterns = [
     path('resetpassword_validate/<uidb64>/<token>/', reset_password, name='reset_password'),
     path('forgotpassword/', views.forgot_password, name='forgot_password'),
     path('resetPassword/', views.resetPassword, name='resetPassword'),
+    path('dashboard/portfolio-list/', views.portfolio_list, name='portfolio_list'),
+    path('dashboard/portfolio-list/portfolio/<int:pk>/', views.view_portfolio, name='view_portfolio'),
+    path('dashboard/approve-artwork-list/', views.approve_artwork_list, name='artwork_list'),
+    path('dashboard/approve-artwork-list/artwork/<int:pk>/', views.artwork_approval_detail, name='artwork_approval_detail'),
+    path('dashboard/edit-delete-artwork-list/', views.edit_delete_artworks_admin, name='edit_delete_artwork_list'),
 ]

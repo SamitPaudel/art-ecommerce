@@ -1,14 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1>Artists</h1>
-    <ul>
-        {% for artist in artists %}
-            <li><a href="{% url 'artist_detail' artist.slug %}">{{ artist.artist_name }}</a></li>
-        {% empty %}
-            <li>No artists found.</li>
-        {% endfor %}
-    </ul>
-</div>
+    <div class="container">
+        <h1>Artists</h1>
+        <ul class="list-group">
+{#            {% if request.user.is_superadmin %}#}
+{#                <div class="d-flex justify-content-end mb-2">#}
+{#                    <a href="{% url 'artist_add' %}" class="btn btn-primary mr-auto">#}
+{#                        <i class="bi bi-plus-circle"></i> Add Artist#}
+{#                    </a>#}
+{#                </div>#}
+{#            {% endif %}#}
+            {% for artist in artists %}
+                <li class="list-group-item">
+                    <a href="{% url 'artist_detail' artist.slug %}">{{ artist.artist_name }}</a>
+                    {% if request.user.is_superadmin %}
+                        <div class="float-right">
+                            <a href="{% url 'artist_edit' artist.slug %}" class="btn btn-sm btn-primary">Edit</a>
+                            <a href="{% url 'artist_delete' artist.slug %}" class="btn btn-sm btn-danger">Remove</a>
+                        </div>
+                    {% endif %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No artists found.</li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

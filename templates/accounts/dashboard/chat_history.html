@@ -1,5 +1,6 @@
 {% extends 'dashboard.html' %}
 {% load widget_tweaks %}
+{% load static %}
 {% block content %}
     <section class="section-content padding-y bg">
 
@@ -26,6 +27,19 @@
                         {% if user.is_verified_artist %}
                             <a class="list-group-item active" href="#">Chat History</a>
                         {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'portfolio_list' %}">Portfolio List</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'artwork_list' %}">Artwork For Approval</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'edit_delete_artwork_list' %}">Edit / Delete
+                                Artworks</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'add_artwork_admin' %}">Add Artwork</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
@@ -39,15 +53,37 @@
                         <article class="card">
                             <div class="card-body">
                                 {% if chatrooms %}
-                                    <ul>
+                                    <ul class="list-group">
                                         {% for chatroom in chatrooms %}
-                                            <li><a href="{% url 'chat_detail' chatroom.id %}">{{ chatroom }}</a></li>
+                                            <li class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        {% if chatroom.artwork.image %}
+                                                            <img src="{{ chatroom.artwork.image.url }}"
+                                                                 alt="{{ chatroom.artwork.artwork_title }}" class="mr-3"
+                                                                 style="width:50px;">
+                                                        {% else %}
+                                                            <img src="{% static 'img/default_image.png' %}"
+                                                                 alt="{{ chatroom.artwork.artwork_title }}" class="mr-3"
+                                                                 style="width:50px;">
+                                                        {% endif %}
+                                                        <a href="{% url 'chat_detail' chatroom.id %}">{{ chatroom }}</a>
+                                                    </div>
+                                                    <br>
+                                                    <div class="text-muted align-right">
+                                                        {% if chatroom.last_message %}
+                                                            {{ chatroom.last_message.content|truncatechars:50 }}
+                                                        {% else %}
+                                                            No messages yet
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 {% else %}
                                     <p>You don't have any chatrooms yet.</p>
                                 {% endif %}
-
                             </div>
                         </article>
                     </main>

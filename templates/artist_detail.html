@@ -2,36 +2,43 @@
 
 {% block content %}
     <div class="container">
-    <h1>{{ artist.artist_name }}</h1>
-    <p>{{ artist.description }}</p>
-    <p>{{ artist.artist_email.email }}</p>
+        <div class="row">
+            <div class="col-md-8">
+                <h1 class="font-weight-light">{{ artist.artist_name }}</h1>
 
-    <h2>Artworks</h2>
-    <div class="row">
-        {% for artwork in artwork_list %}
-            <div class="col-md-4">
-                <figure class="card card-product-grid">
-                    <div class="img-wrap">
-                        <a href="{{ artwork.get_url }}"><img src="{{ artwork.image.url }}"></a>
-
-
-                    </div> <!-- img-wrap.// -->
-                    <figcaption class="info-wrap">
-                        <div class="fix-height">
-                            <a href="{{ artwork.get_url }}" class="title">{{ artwork.artwork_title}}</a>
-                            <span class="price">${{ artwork.price }}</span>
-
-                                <a href="{{ artwork.get_url }}" class="title">{{ artwork.artist_name }}</a>
+                <h2>Artworks</h2>
+                <div class="row">
+                    {% for artwork in artwork_list %}
+                        <div class="col-md-4">
+                            <figure class="card card-product-grid mb-3">
+                                <div class="img-wrap">
+                                    <a href="{{ artwork.get_url }}"><img src="{{ artwork.image.url }}"
+                                                                         class="img-fluid"></a>
+                                </div>
+                                <figcaption class="info-wrap">
+                                    <div class="fix-height">
+                                        <a href="{{ artwork.get_url }}" class="title">{{ artwork.artwork_title }}</a>
+                                        <span class="price">${{ artwork.price }}</span>
+                                        <a href="{{ artwork.get_url }}" class="artist">{{ artwork.artist_name }}</a>
+                                    </div>
+                                    <a href="{% url 'add_cart' artwork.id %}" class="btn btn-block btn-primary mt-3">Add
+                                        to Cart</a>
+                                </figcaption>
+                            </figure>
                         </div>
-                        <a href="{% url 'add_cart' artwork.id %}" class="btn btn-block btn-primary">Add to Cart</a>
-                    </figcaption>
-                </figure>
-	        </div> <!-- col.// -->
-{#            <li><a href="{% url 'artwork_detail' artwork.genre.slug artwork.slug %}">{{ artwork.title }}</a></li>#}
-        {% empty %}
-            <li>No artwork found.</li>
-        {% endfor %}
-    </div>
+                    {% empty %}
+                        <div class="col-md-12">
+                            <p>No artwork found.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
 
+            <div class="col-md-4">
+                <h3>Artist Information</h3>
+                <p>{{ artist.description }}</p>
+                <p>{{ artist.artist_email.email }}</p>
+            </div>
+        </div>
     </div>
-    {% endblock %}
+{% endblock %}

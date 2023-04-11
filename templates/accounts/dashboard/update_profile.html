@@ -25,6 +25,19 @@
                         {% if user.is_verified_artist %}
                             <a class="list-group-item" href="{% url 'chat_history' %}">Chat History</a>
                         {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'portfolio_list' %}">Portfolio List</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'artwork_list' %}">Artwork For Approval</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'edit_delete_artwork_list' %}">Edit / Delete
+                                Artworks</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'add_artwork_admin' %}">Add Artwork</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
@@ -39,7 +52,8 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-8">
-                                        <form action="{% url 'update_profile' %}" method="POST">
+                                        <form action="{% url 'update_profile' %}" method="POST"
+                                              enctype="multipart/form-data">
                                             {% csrf_token %}
                                             <div class="form-group">
                                                 <label>Change Full Name</label>
@@ -51,6 +65,11 @@
                                                 <input type="text" class="form-control" placeholder="Username"
                                                        name="username" value="{{ user.username }}">
                                             </div> <!-- form-group// -->
+                                            <div class="form-group">
+                                                <label>Change Phone No.</label>
+                                                <input type="number" class="form-control" placeholder="Phone Number"
+                                                       name="phone_number" value="{{ user.phone_number }}">
+                                            </div>
 
                                             {% if request.user.profileImage %}
                                                 <img style="width: 150px; height: 150px;"
@@ -64,7 +83,8 @@
                                             <div class="mb-3">
                                                 <label for="profileImage" class="form-label">Change Profile
                                                     Image</label>
-                                                <input class="form-control" type="file" id="formFile">
+                                                <input class="form-control" type="file" id="profileImage"
+                                                       name="profileImage">
                                             </div>
                                             <div class="form-group">
                                                 <button type="submit" class="btn btn-primary ">Change</button>

@@ -18,6 +18,7 @@ from medium.models import Medium
 
 tz = timezone.get_current_timezone()
 
+
 class Artwork(models.Model):
     artwork_title = models.CharField(max_length=500)
     slug = models.SlugField(max_length=200, unique=True)
@@ -32,7 +33,9 @@ class Artwork(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='photos/artworks', blank=False)
-    isAvailable = models.BooleanField(default=True)
+    isAvailable = models.BooleanField(default=False)
+    isApproved = models.BooleanField(default=False)
+    buyer = models.ForeignKey(Account, on_delete=models.SET_NULL, blank=True, null=True)
 
     def get_url(self):
         return reverse('artwork_detail', args=[self.genre.slug, self.slug])
@@ -43,6 +46,9 @@ class Artwork(models.Model):
     def get_absolute_url(self):
         return reverse('artwork_detail', kwargs={'artwork_id': self.id})
 
+    def get_artist_page(self):
+        return reverse('artist_detail', kwargs={'slug': self.artist_name.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.artwork_title)
@@ -50,7 +56,7 @@ class Artwork(models.Model):
 
     def user_liked_artwork(self, user):
         try:
-            user_liked_artwork = UserLikedArtwork.objects.get(user=user, artwork=self)
+            user_liked_artwork = UserLikedArtwork.objects.get(user=user.user, artwork=self)
             return user_liked_artwork
         except UserLikedArtwork.DoesNotExist:
             return None
@@ -117,6 +123,15 @@ class Auction(models.Model):
 
         super().save(*args, **kwargs)
 
+    def end_auction(self):
+        if timezone.now() >= self.end_time:
+            highest_bid = self.get_bids().first()
+            if highest_bid:
+                self.artwork.buyer = highest_bid.user
+                self.artwork.isAvailable = False
+                self.is_active = False
+                self.bid = highest_bid
+                self.save()
 
 
 class Bid(models.Model):
