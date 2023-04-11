@@ -1,0 +1,13 @@
+<h1>Order Confirmation</h1>
+
+<p>Thank you for your order! Here are the details:</p>
+
+<ul>
+  {% for item in cart_items %}
+    <li>{{ item.artwork.artwork_title }} : Rs.{{ item.artwork.price }}</li>
+  {% endfor %}
+</ul>
+
+<p>Total Price: Rs.{{ total_price }} - {{ discount }} = {{ grand_total }}</p>
+
+<p>Thank you for supporting Nepali Artists!</p>

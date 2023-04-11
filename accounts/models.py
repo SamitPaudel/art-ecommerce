@@ -69,6 +69,8 @@ class Account(AbstractBaseUser):
         return True
 
 
+
+
 class ArtPortfolio(models.Model):
     artist = models.ForeignKey(Account, on_delete=models.CASCADE)
     image1 = models.ImageField(upload_to='art_portfolio_images', blank=True, null=True)

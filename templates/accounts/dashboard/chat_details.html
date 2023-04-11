@@ -28,6 +28,13 @@
                         {% if user.is_superadmin %}
                             <a class="list-group-item" href="{% url 'artwork_list' %}">Artwork For Approval</a>
                         {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'edit_delete_artwork_list' %}">Edit / Delete
+                                Artworks</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'add_artwork_admin' %}">Add Artwork</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span

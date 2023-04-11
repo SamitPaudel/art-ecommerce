@@ -25,6 +25,13 @@
                         {% if user.is_superadmin %}
                             <a class="list-group-item" href="{% url 'artwork_list' %}">Artwork For Approval</a>
                         {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'edit_delete_artwork_list' %}">Edit / Delete
+                                Artworks</a>
+                        {% endif %}
+                        {% if user.is_superadmin %}
+                            <a class="list-group-item" href="{% url 'add_artwork_admin' %}">Add Artwork</a>
+                        {% endif %}
                     </ul>
                     <br>
                     <a class="btn btn-light btn-block" href="{% url 'logout' %}"> <i class="fa fa-power-off"></i> <span
@@ -34,29 +41,27 @@
 
                 {% block content-2 %}
                     <main class="col-md-9">
-                        <div class="container mt-5">
-                            <h2>Portfolios for Approval</h2>
-                            <div class="card">
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush">
-                                        {% for portfolio in portfolios %}
-                                            <li class="list-group-item">
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <h4>{{ portfolio.artist }}</h4>
-                                                        <p>{{ portfolio.created_at }}</p>
-                                                    </div>
-                                                    <div>
-                                                        <a href="{% url 'view_portfolio' portfolio.id %}"
-                                                           class="btn btn-primary">View</a>
-                                                    </div>
+                        <h2>Portfolios for Approval</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for portfolio in portfolios %}
+                                        <li class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h4>{{ portfolio.artist }}</h4>
+                                                    <p>{{ portfolio.created_at }}</p>
                                                 </div>
-                                            </li>
-                                        {% empty %}
-                                            <li class="list-group-item">No portfolios found.</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
+                                                <div>
+                                                    <a href="{% url 'view_portfolio' portfolio.id %}"
+                                                       class="btn btn-primary">View</a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item">No portfolios found.</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                         </div>
                     </main>

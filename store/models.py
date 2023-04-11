@@ -46,6 +46,9 @@ class Artwork(models.Model):
     def get_absolute_url(self):
         return reverse('artwork_detail', kwargs={'artwork_id': self.id})
 
+    def get_artist_page(self):
+        return reverse('artist_detail', kwargs={'slug': self.artist_name.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.artwork_title)

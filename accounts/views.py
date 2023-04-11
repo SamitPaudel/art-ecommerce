@@ -2,6 +2,7 @@ from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.files.storage import FileSystemStorage
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
@@ -39,15 +40,22 @@ def register(request):
             user.save()
 
             messages.success(request, "Registration Successful.")
-            return redirect('register')
+            return redirect('login')
     else:
         form = RegistrationForm()
 
-    form = RegistrationForm()
     context = {
         'form': form,
     }
+
+    # check if the email is already registered
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        if Account.objects.filter(email=email).exists():
+            context['email_already_registered'] = 'This email address is already registered.'
+
     return render(request, 'accounts/register.html', context)
+
 
 
 def login(request):
@@ -150,9 +158,16 @@ def resetPassword(request):
 def update_profile(request):
     context = {}
     user = request.user
-    form = UpdateForm(request.POST or None, instance=user)
+    form = UpdateForm(request.POST or None, request.FILES or None, instance=user)
     if request.method == 'POST':
         if form.is_valid():
+            # handle image upload and save to user model
+            if request.FILES.get('profileImage'):
+                image_file = request.FILES['profileImage']
+                fs = FileSystemStorage()
+                filename = fs.save(image_file.name, image_file)
+                user.profileImage = filename
+
             form.save()
             return redirect("home")
 
@@ -165,18 +180,22 @@ def update_profile(request):
 
 
 def submit_portfolio(request):
-    if request.method == 'POST':
-        form = ArtPortfolioForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Save the ArtPortfolio instance
-            art_portfolio = form.save(commit=False)
-            art_portfolio.artist = request.user
-            art_portfolio.save()
-            form.save_m2m()
-            return redirect('submit_portfolio')
+    current_portfolio = ArtPortfolio.objects.filter(artist=request.user).first()
+
+    if current_portfolio:
+        message = 'Your portfolio is already pending approval'
+        return render(request, 'accounts/dashboard/submit_portfolio.html', {'message': message})
     else:
-        form = ArtPortfolioForm()
-    return render(request, 'accounts/dashboard/submit_portfolio.html', {'form': form})
+        form = ArtPortfolioForm(request.POST or None, request.FILES or None)
+        if request.method == 'POST':
+            if form.is_valid():
+                # Save the ArtPortfolio instance
+                art_portfolio = form.save(commit=False)
+                art_portfolio.artist = request.user
+                art_portfolio.save()
+                form.save_m2m()
+                return redirect('submit_portfolio')
+        return render(request, 'accounts/dashboard/submit_portfolio.html', {'form': form})
 
 
 @login_required
@@ -217,17 +236,19 @@ def edit_artwork(request, artwork_id):
     return render(request, 'accounts/dashboard/edit_artwork.html', {'form': form, 'artwork': artwork})
 
 
-@login_required
-@require_POST
+
+
 def delete_artwork(request, artwork_id):
     try:
-        artwork = Artwork.objects.get(id=artwork_id, artist_name=request.user)
+        artwork = Artwork.objects.get(id=artwork_id)
         artwork.delete()
-        return JsonResponse({})
+        messages.success(request, 'Artwork has been deleted successfully.')
     except Artwork.DoesNotExist:
-        return JsonResponse({"error": "Artwork not found."}, status=404)
+        messages.error(request, 'Artwork not found.')
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        messages.error(request, str(e))
+
+    return redirect('edit_delete_artwork_list')
 
 
 @login_required
@@ -287,6 +308,7 @@ def view_portfolio(request, pk):
         if 'confirm' in request.POST:
             portfolio.isApproved = True
             portfolio.save()
+            return redirect('portfolio_list')
         elif 'reject' in request.POST:
             portfolio.delete()
             return redirect('portfolio_list')
@@ -297,15 +319,42 @@ def approve_artwork_list(request):
     artworks = Artwork.objects.filter(isApproved=False)
     return render(request, 'accounts/dashboard/approve_artwork_list.html', {'artworks': artworks})
 
+def edit_delete_artworks_admin(request):
+    artworks = Artwork.objects.filter(isApproved=True, isAvailable=True).order_by('-date_added')
+    return render(request, 'accounts/dashboard/edit_delete_artwork_list.html', {'artworks': artworks})
+
 
 def artwork_approval_detail(request, pk):
     artwork = get_object_or_404(Artwork, pk=pk)
     if request.method == 'POST':
         if 'approve' in request.POST:
             artwork.isApproved = True
+            artwork.isAvailable = True
+            artwork.is_verified = True
             artwork.save()
             return redirect('artwork_list')
         elif 'cancel' in request.POST:
             artwork.delete()
             return redirect('artwork_list')
     return render(request, 'accounts/dashboard/artwork_approval_detail.html', {'artwork': artwork})
+
+
+@login_required
+def upload_artwork_admin(request):
+    artists = Artist.objects.all()
+    if request.method == 'POST':
+        form = ArtworkForm(request.POST, request.FILES)
+        if form.is_valid():
+            artwork = form.save(commit=False)
+            artwork.artist_name = Artist.objects.get(id=request.POST.get('artist_name'))
+            artwork.isApproved = True
+            artwork.isVerified = True
+            artwork.isAvailable = True
+            artwork.save()
+            messages.success(request, 'Your artwork has been uploaded.')
+            return redirect('dashboard')
+    else:
+        form = ArtworkForm()
+
+    context = {'form': form, 'artists': artists}
+    return render(request, 'accounts/dashboard/add_artwork_admin.html', context)

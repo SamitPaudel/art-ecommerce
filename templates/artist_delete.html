@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1>Delete Artist</h1>
+    <p>Are you sure you want to delete "{{ artist.artist_name }}"?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, delete this artist</button>
+      <a href="{% url 'artist_detail' slug=artist.slug %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

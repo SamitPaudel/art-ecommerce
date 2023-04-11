@@ -21,6 +21,12 @@ class RegistrationForm(forms.ModelForm):
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if Account.objects.filter(email=email).exists():
+            raise forms.ValidationError('This email address is already registered.')
+        return email
+
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
         password = cleaned_data.get('password')
@@ -34,7 +40,18 @@ class RegistrationForm(forms.ModelForm):
 class UpdateForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ("full_name", "username", "profileImage")
+        fields = ("full_name", "username", "profileImage", "phone_number")
+
+    def save(self, commit=True):
+        account = super(UpdateForm, self).save(commit=False)
+        if commit:
+            account.save()
+            # update artist name if user is a verified artist
+            if account.is_verified_artist:
+                artist = account.artist
+                artist.artist_name = account.full_name
+                artist.save()
+        return account
 
 class ArtPortfolioForm(forms.ModelForm):
     class Meta:

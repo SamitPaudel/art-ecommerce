@@ -96,7 +96,7 @@
                                                     <option value="5000">Rs.5000</option>
                                                     <option value="10000">Rs.10000</option>
                                                     <option value="20000">Rs.20000</option>
-                                                    <option value="100000">Rs.50000+</option>
+                                                    <option value="100000" selected>Rs.50000+</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -113,7 +113,7 @@
 
                     <header class="border-bottom mb-4 pb-3">
                         <div class="form-inline">
-                            <span class="mr-md-auto">{{ artworks.count }} Items found </span>
+                            <span class="mr-md-auto">{{ artworks_count }} Items found </span>
 
                         </div>
                     </header><!-- sect-heading -->
@@ -141,7 +141,7 @@
                                                     <a href="{{ artwork.get_url }}"
                                                        class="title">{{ artwork.artwork_title }}</a>
                                                     <span class="price">Rs.{{ artwork.price }}</span>
-                                                    <a href="{{ artwork.get_url }}"
+                                                    <a href="{{ artwork.get_artist_page }}"
                                                        class="title">{{ artwork.artist_name }}</a>
                                                 </div>
                                                 <a href="{% url 'add_cart' artwork.id %}"
@@ -217,5 +217,38 @@
             font-weight: bold;
             text-transform: uppercase;
         }
+
+        select option[disabled] {
+            color: #ccc;
+        }
     </style>
+
+    <script>
+        var minPriceDropdown = document.querySelector('select[name="min_price"]');
+        var maxPriceDropdown = document.querySelector('select[name="max_price"]');
+
+        minPriceDropdown.addEventListener('change', function () {
+            var selectedMinPrice = parseInt(minPriceDropdown.value);
+            var options = maxPriceDropdown.options;
+            for (var i = 0; i < options.length; i++) {
+                if (parseInt(options[i].value) <= selectedMinPrice) {
+                    options[i].disabled = true;
+                } else {
+                    options[i].disabled = false;
+                }
+            }
+        });
+
+        maxPriceDropdown.addEventListener('change', function () {
+            var selectedMaxPrice = parseInt(maxPriceDropdown.value);
+            var options = minPriceDropdown.options;
+            for (var i = 0; i < options.length; i++) {
+                if (parseInt(options[i].value) >= selectedMaxPrice) {
+                    options[i].disabled = true;
+                } else {
+                    options[i].disabled = false;
+                }
+            }
+        });
+    </script>
 {% endblock %}
